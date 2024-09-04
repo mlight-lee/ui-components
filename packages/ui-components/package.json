@@ -1,0 +1,25 @@
+{
+  "name": "@mlightcad/ui-components",
+  "private": true,
+  "version": "0.0.1",
+  "main": "dist/ui-components.umd.js",
+  "module": "dist/ui-components.es.js",
+  "type": "module", 
+  "types": "./lib/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist lib tsconfig.tsbuildinfo",
+    "build": "vue-tsc && vite build",
+    "generate": "vite-ssg build",
+    "lint": "pnpm eslint src/",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "peerDependencies": {
+    "element-plus": "^2.8.1",
+    "vue": "^3.4.21"
+  },
+  "license": "MIT"
+}
