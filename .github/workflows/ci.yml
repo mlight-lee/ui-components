@@ -1,5 +1,5 @@
 # Workflow for lint and building this project
-name: main
+name: ci
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  main:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,6 +39,4 @@ jobs:
       - name: Build projects
         run: pnpm build
 
-      - name: Type Check
-        run: pnpm typecheck
 

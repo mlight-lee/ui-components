@@ -1,16 +1,28 @@
 {
   "name": "element-plus-vite-starter",
-  "private": true,
   "version": "0.1.0",
+  "description": "One common UI component library based on Element Plus",
+  "license": "MIT",
+  "author": "MLight Lee <mlight.lee@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mlight-lee/ui-components"
+  },
+  "keywords": [
+    "ui",
+    "component",
+    "vue",
+    "element plus",
+    "cad",
+    "mlight"
+  ],
   "type": "module",
   "scripts": {
     "build": "nx run-many -t build",
     "clean": "nx run-many -t clean",
     "dev": "pnpm run --filter demo-app dev",
     "format": "prettier --config ./.prettierrc.js --write packages/**/*.{ts,js,vue,json}",
-    "generate": "vite-ssg build",
     "lint": "nx run-many -t lint",
-    "preview": "vite preview",
     "typecheck": "nx run-many -t typecheck"
   },
   "devDependencies": {
@@ -36,6 +48,5 @@
     "vite-ssg": "^0.23.6",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^2.0.7"
-  },
-  "license": "MIT"
+  }
 }
