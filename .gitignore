@@ -16,4 +16,7 @@ package-lock.json
 components.d.ts
 auto-imports.d.ts
 
+# nx
+tsconfig.tsbuildinfo
+
 *.log

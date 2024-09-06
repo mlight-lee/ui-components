@@ -23,16 +23,48 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+/**
+ * Data to descibe button appearance
+ */
 export interface MlButtonData {
+  /**
+   * Icon represented by one SVG string
+   */
   icon: string
+  /**
+   * Text shown below icon
+   */
   text: string
+  /**
+   * Command string which will be passed to click event as event arguments
+   */
   command: string
+  /**
+   * Tooltips content when hover
+   */
   description: string
 }
 
+/**
+ * Properties of MLToolbar components
+ */
 interface Props {
+  /**
+   * An array of button data
+   */
   items: MlButtonData[]
+  /**
+   * Button size.
+   * - small: 30px
+   * - medium: 50px
+   * - large: 70px
+   */
   size?: 'small' | 'medium'| 'large'
+  /**
+   * Layout type.
+   * - vertical: arrange button vertically
+   * - horizontal: arrange button horizontally
+   */
   layout?: 'vertical' | 'horizontal'
 }
 
