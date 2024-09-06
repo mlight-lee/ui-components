@@ -1,0 +1,38 @@
+{
+  "name": "@mlightcad/ui-components",
+  "version": "0.0.1",
+  "description": "One common UI component library based on Element Plus",
+  "license": "MIT",
+  "author": "MLight Lee <mlight.lee@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mlight-lee/ui-components"
+  },
+  "keywords": [
+    "ui",
+    "component",
+    "vue",
+    "element plus",
+    "cad",
+    "mlight"
+  ],
+  "main": "dist/ui-components.umd.js",
+  "module": "dist/ui-components.es.js",
+  "type": "module", 
+  "types": "./lib/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist lib tsconfig.tsbuildinfo",
+    "build": "vue-tsc && vite build",
+    "generate": "vite-ssg build",
+    "lint": "eslint src/",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "peerDependencies": {
+    "element-plus": "^2.8.1",
+    "vue": "^3.4.21"
+  }
+}

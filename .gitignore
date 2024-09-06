@@ -1,0 +1,22 @@
+.vite-ssg-temp
+.nx
+
+node_modules
+.DS_Store
+dist
+lib
+dist-ssr
+*.local
+
+# lock
+yarn.lock
+package-lock.json
+
+# vue
+components.d.ts
+auto-imports.d.ts
+
+# nx
+tsconfig.tsbuildinfo
+
+*.log

@@ -1,0 +1,53 @@
+{
+  "name": "element-plus-vite-starter",
+  "version": "0.1.0",
+  "description": "One common UI component library based on Element Plus",
+  "license": "MIT",
+  "author": "MLight Lee <mlight.lee@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mlight-lee/ui-components"
+  },
+  "keywords": [
+    "ui",
+    "component",
+    "vue",
+    "element plus",
+    "cad",
+    "mlight"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "nx run-many -t build",
+    "clean": "nx run-many -t clean",
+    "dev": "pnpm run --filter demo-app dev",
+    "format": "prettier --config ./.prettierrc.js --write packages/**/*.{ts,js,vue,json}",
+    "lint": "nx run-many -t lint",
+    "typecheck": "nx run-many -t typecheck",
+    "publish": "pnpm lint clean && pnpm publish --filter three-viewcube --access public --no-git-checks"
+  },
+  "devDependencies": {
+    "@iconify-json/ep": "^1.1.15",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/parser": "^8.4.0",
+    "@vitejs/plugin-vue": "^5.1.3",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-vue": "^9.28.0",
+    "nx": "^19.6.5",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "sass": "^1.72.0",
+    "typescript": "^5.4.3",
+    "typescript-eslint": "^8.4.0",
+    "unocss": "^0.58.6",
+    "unplugin-auto-import": "^0.18.2",
+    "unplugin-vue-components": "^0.26.0",
+    "vite": "^5.2.5",
+    "vite-ssg": "^0.23.6",
+    "vue-eslint-parser": "^9.4.3",
+    "vue-tsc": "^2.0.7"
+  }
+}
