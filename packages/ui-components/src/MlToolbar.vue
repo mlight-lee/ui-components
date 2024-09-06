@@ -1,74 +1,93 @@
 <template>
-  <el-row>
-    <el-col :span="24">
-      <el-button-group>
-        <el-button
-          :style="{ width: width + 'px', height: height + 'px' }"
-          v-for="(item, index) in items"
-          :key="index"
-          :size="item.size"
-          @click="handleCommand(item.command)"
-        >
-          <div class="icon-text-wrapper">
-            <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
-            <el-icon size="30" v-html="item.icon" />
-            <div class="button-text">{{ item.text }}</div>
-          </div>
-        </el-button>
-      </el-button-group>
-    </el-col>
-  </el-row>
+  <el-button-group :class="buttonGroupClass">
+    <el-tooltip         
+      v-for="(item, index) in items"
+      :key="item.text"
+      :content="buttonTooltip(item)"
+    >
+      <el-button
+        :style="{ width: buttonSize + 'px', height: buttonSize + 'px' }"
+        :key="index"
+        @click="handleCommand(item.command)"
+      >
+        <div class="icon-text-wrapper">
+          <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
+          <el-icon :size="buttonIconSize" v-html="item.icon" />
+          <div v-if="isShowButtonText" class="button-text">{{ item.text }}</div>
+        </div>
+      </el-button>
+    </el-tooltip>
+  </el-button-group>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 export interface MlButtonData {
   icon: string
-  size: 'default' | 'large' | 'small'
   text: string
   command: string
+  description: string
 }
 
 interface Props {
   items: MlButtonData[]
-  width?: number
-  height?: number
+  size?: 'small' | 'medium'| 'large'
+  layout?: 'vertical' | 'horizontal'
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  width: 70,
-  height: 70
+  size: 'large',
+  layout: 'horizontal'
 })
 
-if (props.height <= 60) {
-  console.warn(
-    'It is better to set height to value greater than 60 to get good experience.'
-  )
-}
-if (props.width <= 60) {
-  console.warn(
-    'It is better to set width to value greater than 60 to get good experience.'
-  )
+const emit = defineEmits({
+  click: null
+})
+
+const buttonGroupClass = computed(() => {
+  return props.layout === 'vertical' ? 'vertical-button-group' : 'horizontal-button-group'
+})
+
+const buttonIconSize = computed(() => {
+  return (props.size === 'small') ? 20 : 30
+})
+
+const buttonSize = computed(() => {
+  switch(props.size) {
+    case 'small':
+      return 30
+    case 'medium':
+      return 50
+  }
+  return 70
+})
+
+const buttonTooltip = (item: MlButtonData) => {
+  return item.description ? item.description : item.text
 }
 
+const isShowButtonText = computed(() => {
+  return (props.size === 'large')
+})
+
 const handleCommand = (command: string) => {
-  switch (command) {
-    case 'edit':
-      console.log('Edit command executed')
-      break
-    case 'delete':
-      console.log('Delete command executed')
-      break
-    case 'search':
-      console.log('Search command executed')
-      break
-    default:
-      console.log('Unknown command:', command)
-      break
-  }
+  emit('click', command)
 }
 </script>
 
 <style scoped>
+.vertical-button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.horizontal-button-group {
+  display: flex;
+  flex-direction: row;
+}
+
 .custom-button {
   display: flex;
   flex-direction: column;
