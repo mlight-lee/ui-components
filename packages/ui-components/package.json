@@ -37,8 +37,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "devDependencies": {
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "vite-plugin-css-injected-by-js": "^3.5.1"
+    "rollup-plugin-peer-deps-external": "^2.2.4"
   },
   "peerDependencies": {
     "element-plus": "^2.8.1",
