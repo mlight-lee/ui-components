@@ -1,4 +1,4 @@
-import { defineConfig, Alias } from 'vite'
+import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -6,14 +6,7 @@ import vue from '@vitejs/plugin-vue'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 
-export default defineConfig(({ command }) => {
-  const aliases: Alias[] = []
-  if (command === 'serve') {
-    aliases.push({
-      find: '@mlightcad/ui-components',
-      replacement: resolve(__dirname, '../ui-components/src')
-    })
-  }
+export default defineConfig(() => {
   return {
     base: './',
     plugins: [
@@ -26,9 +19,6 @@ export default defineConfig(({ command }) => {
       }),
       peerDepsExternal()
     ],
-    resolve: {
-      alias: aliases
-    },
     build: {
       lib: {
         entry: resolve(__dirname, 'src/index.ts'),

@@ -24,7 +24,7 @@
     "format": "prettier --config ./.prettierrc.js --write packages/**/*.{ts,js,vue,json}",
     "lint": "nx run-many -t lint",
     "typecheck": "nx run-many -t typecheck",
-    "publish": "pnpm lint clean && pnpm publish --filter three-viewcube --access public --no-git-checks"
+    "publish": "pnpm lint clean && pnpm publish --filter ui-components --access public --no-git-checks"
   },
   "devDependencies": {
     "@iconify-json/ep": "^1.1.15",

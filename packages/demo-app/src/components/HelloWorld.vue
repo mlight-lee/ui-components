@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import '@mlightcad/ui-components/dist/style.css'
-
 import { MlButtonData, MlToolbar } from '@mlightcad/ui-components'
 import { reactive } from 'vue'
 
