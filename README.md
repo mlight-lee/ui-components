@@ -6,11 +6,19 @@ This is one common UI component library based on Element Plus.
 
 The following components are included in this package.
 
-- Toolbar: one toolbar which can be easily customized by one JSON object. 
+- Toolbar: one toolbar which can be easily customized by one array of button data. 
 
 ### Toolbar
 
-This component is one toolbar which can be easily customized by one JSON object. It has the following properties.
+Toolbar component has the followiing features.
+
+- Define button list by one array of `MlButtonData`
+- Arrange button vertically or horizontally
+- Support three kind of button size
+
+<img src="./doc/toolbar.jpg" width="423" height="223" alt="ViewCube Example">
+
+Features above can be customized by the following properties.
 
 ```javascript
 /**
@@ -59,7 +67,7 @@ export interface MlButtonData {
   /**
    * Tooltips content when hover
    */
-  description: string
+  description?: string
 }
 ```
 

@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import vue from '@vitejs/plugin-vue'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 
 export default defineConfig(({ command }) => {
   const aliases: Alias[] = []
@@ -22,7 +23,8 @@ export default defineConfig(({ command }) => {
       }),
       Components({
         resolvers: [ElementPlusResolver()]
-      })
+      }),
+      peerDepsExternal()
     ],
     resolve: {
       alias: aliases
@@ -34,8 +36,6 @@ export default defineConfig(({ command }) => {
         fileName: format => `ui-components.${format}.js`
       },
       rollupOptions: {
-        // Make sure to externalize dependencies that shouldn't be bundled
-        external: ['vue'],
         output: {
           globals: {
             vue: 'Vue'

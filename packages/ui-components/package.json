@@ -1,6 +1,6 @@
 {
   "name": "@mlightcad/ui-components",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "One common UI component library based on Element Plus",
   "license": "MIT",
   "author": "MLight Lee <mlight.lee@outlook.com>",
@@ -21,7 +21,12 @@
   "type": "module", 
   "types": "./lib/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "lib/*.js",
+    "lib/*.ts",
+    "src",
+    "README.md",
+    "package.json"
   ],
   "scripts": {
     "clean": "rimraf dist lib tsconfig.tsbuildinfo",
@@ -30,6 +35,9 @@
     "lint": "eslint src/",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit"
+  },
+  "devDependencies": {
+    "rollup-plugin-peer-deps-external": "^2.2.4"
   },
   "peerDependencies": {
     "element-plus": "^2.8.1",
