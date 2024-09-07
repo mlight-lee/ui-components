@@ -42,7 +42,7 @@ export interface MlButtonData {
   /**
    * Tooltips content when hover
    */
-  description: string
+  description?: string
 }
 
 /**

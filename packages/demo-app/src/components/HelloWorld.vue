@@ -6,45 +6,28 @@ import { reactive } from 'vue'
 
 defineProps<{ msg: string }>()
 
-const svg =
-  '<svg data-v-d0da8fdb="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path fill="currentColor" d="M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384m0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256"></path></svg>'
+const editSvgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="M832 512a32 32 0 1 1 64 0v352a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h352a32 32 0 0 1 0 64H192v640h640z"/><path fill="currentColor" d="m469.952 554.24l52.8-7.552L847.104 222.4a32 32 0 1 0-45.248-45.248L477.44 501.44l-7.552 52.8zm422.4-422.4a96 96 0 0 1 0 135.808l-331.84 331.84a32 32 0 0 1-18.112 9.088L436.8 623.68a32 32 0 0 1-36.224-36.224l15.104-105.6a32 32 0 0 1 9.024-18.112l331.904-331.84a96 96 0 0 1 135.744 0z"/></svg>'
+const deleteSvgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32zm448-64v-64H416v64zM224 896h576V256H224zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32m192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32"/></svg>'
+const searchSvgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="m795.904 750.72l124.992 124.928a32 32 0 0 1-45.248 45.248L750.656 795.904a416 416 0 1 1 45.248-45.248zM480 832a352 352 0 1 0 0-704a352 352 0 0 0 0 704"/></svg>'
 
-const data1 = reactive<MlButtonData[]>([
+const data = reactive<MlButtonData[]>([
   {
-    icon: svg,
-    text: 'Edit1',
-    command: 'edit1',
+    icon: editSvgIcon,
+    text: 'Edit',
+    command: 'edit',
     description: 'This is description for edit button'
   },
   {
-    icon: svg,
-    text: 'Delete1',
-    command: 'delete1',
+    icon: deleteSvgIcon,
+    text: 'Delete',
+    command: 'delete',
     description: 'This is description for delete button'
   },
   {
-    icon: svg,
-    text: 'Search1',
-    command: 'search1',
+    icon: searchSvgIcon,
+    text: 'Search',
+    command: 'search',
     description: 'This is description for search button'
-  }
-])
-
-const data2 = reactive<MlButtonData[]>([
-  {
-    icon: svg,
-    text: 'Edit2',
-    command: 'edit2'
-  },
-  {
-    icon: svg,
-    text: 'Delete2',
-    command: 'delete2'
-  },
-  {
-    icon: svg,
-    text: 'Search2',
-    command: 'search2'
   }
 ])
 
@@ -54,30 +37,37 @@ const handleCommand = (command: string) => {
 </script>
 
 <template>
-  <div>
-    <ml-toolbar :items="data1" layout="horizontal" @click="handleCommand"/>
-  </div>
-  <div>
-    <ml-toolbar :items="data1" layout="horizontal" size="medium" @click="handleCommand"/>
-  </div>
-  <div>
-    <ml-toolbar :items="data1" layout="horizontal" size="small" @click="handleCommand"/>
-  </div>
-  <div>
-    <ml-toolbar :items="data2" layout="vertical" @click="handleCommand"/>
-  </div>
-  <div>
-    <ml-toolbar :items="data2" layout="vertical" size="medium" @click="handleCommand"/>
-  </div>
-  <div>
-    <ml-toolbar :items="data2" layout="vertical" size="small" @click="handleCommand"/>
-  </div>
+  <el-row :gutter="20" justify="center" class="toolbar-row">
+    <el-col :span="8">
+      <ml-toolbar :items="data" layout="horizontal" @click="handleCommand"/>
+    </el-col>
+    <el-col :span="8">
+      <ml-toolbar :items="data" layout="horizontal" size="medium" @click="handleCommand"/>
+    </el-col>
+    <el-col :span="8">
+      <ml-toolbar :items="data" layout="horizontal" size="small" @click="handleCommand"/>
+    </el-col>
+  </el-row>
+    
+  <el-row :gutter="20" justify="center" class="toolbar-row">
+    <el-col :span="8">
+      <ml-toolbar :items="data" layout="vertical" @click="handleCommand"/>
+    </el-col>
+    <el-col :span="8">
+      <ml-toolbar :items="data" layout="vertical" size="medium" @click="handleCommand"/>
+    </el-col>
+    <el-col :span="8">
+      <ml-toolbar :items="data" layout="vertical" size="small" @click="handleCommand"/>
+    </el-col>
+  </el-row>
+
 </template>
 
 <style>
-.vertical-button-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.toolbar-row {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
