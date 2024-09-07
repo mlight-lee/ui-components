@@ -4,6 +4,7 @@
       v-for="(item, index) in items"
       :key="item.text"
       :content="buttonTooltip(item)"
+      :hide-after=0
     >
       <el-button
         class="ml-toolbar-button"
@@ -126,11 +127,11 @@ const handleCommand = (command: string) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0px;
+  padding: 5px;
 }
 
 .ml-toolbar-button-text {
   margin-left: 0px;
-  margin-top: 8px;
+  margin-top: 5px;
 }
 </style>
