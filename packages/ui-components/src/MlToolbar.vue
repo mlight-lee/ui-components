@@ -6,14 +6,15 @@
       :content="buttonTooltip(item)"
     >
       <el-button
+        class="ml-toolbar-button"
         :style="{ width: buttonSize + 'px', height: buttonSize + 'px' }"
         :key="index"
         @click="handleCommand(item.command)"
       >
-        <div class="icon-text-wrapper">
+        <div>
           <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
           <el-icon :size="buttonIconSize" v-html="item.icon" />
-          <div v-if="isShowButtonText" class="button-text">{{ item.text }}</div>
+          <div v-if="isShowButtonText" class="ml-toolbar-button-text">{{ item.text }}</div>
         </div>
       </el-button>
     </el-tooltip>
@@ -78,7 +79,7 @@ const emit = defineEmits({
 })
 
 const buttonGroupClass = computed(() => {
-  return props.layout === 'vertical' ? 'vertical-button-group' : 'horizontal-button-group'
+  return props.layout === 'vertical' ? 'ml-vertical-toolbar-button-group' : 'ml-horizontal-toolbar-button-group'
 })
 
 const buttonIconSize = computed(() => {
@@ -109,33 +110,26 @@ const handleCommand = (command: string) => {
 </script>
 
 <style scoped>
-.vertical-button-group {
+.ml-vertical-toolbar-button-group {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.horizontal-button-group {
+.ml-horizontal-toolbar-button-group {
   display: flex;
   flex-direction: row;
 }
 
-.custom-button {
+.ml-toolbar-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 0px;
 }
 
-.icon-text-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.button-text {
+.ml-toolbar-button-text {
   margin-left: 0px;
   margin-top: 8px;
 }

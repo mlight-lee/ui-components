@@ -1,9 +1,11 @@
 import path from 'path'
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 import Unocss from 'unocss/vite'
 import {
@@ -20,7 +22,8 @@ const pathSrc = path.resolve(__dirname, 'src')
 export default defineConfig({
   resolve: {
     alias: {
-      '~/': `${pathSrc}/`
+      '~/': `${pathSrc}/`,
+      '@mlightcad/ui-components': resolve(__dirname, '../ui-components/src')
     }
   },
   css: {
@@ -32,6 +35,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    cssInjectedByJsPlugin(),
     AutoImport({
       resolvers: [ElementPlusResolver()]
     }),
