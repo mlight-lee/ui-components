@@ -41,7 +41,7 @@ interface Props {
    * - vertical: arrange button vertically
    * - horizontal: arrange button horizontally
    */
-  layout?: 'vertical' | 'horizontal'
+  direction?: 'vertical' | 'horizontal'
 }
 ```
 

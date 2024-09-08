@@ -37,25 +37,25 @@ const handleCommand = (command: string) => {
 <template>
   <el-row :gutter="20" justify="center" class="toolbar-row">
     <el-col :span="8">
-      <ml-toolbar :items="data" layout="horizontal" @click="handleCommand"/>
+      <ml-toolbar :items="data" direction="horizontal" @click="handleCommand"/>
     </el-col>
     <el-col :span="8">
-      <ml-toolbar :items="data" layout="horizontal" size="medium" @click="handleCommand"/>
+      <ml-toolbar :items="data" direction="horizontal" size="medium" @click="handleCommand"/>
     </el-col>
     <el-col :span="8">
-      <ml-toolbar :items="data" layout="horizontal" size="small" @click="handleCommand"/>
+      <ml-toolbar :items="data" direction="horizontal" size="small" @click="handleCommand"/>
     </el-col>
   </el-row>
     
   <el-row :gutter="20" justify="center" class="toolbar-row">
     <el-col :span="8">
-      <ml-toolbar :items="data" layout="vertical" @click="handleCommand"/>
+      <ml-toolbar :items="data" direction="vertical" @click="handleCommand"/>
     </el-col>
     <el-col :span="8">
-      <ml-toolbar :items="data" layout="vertical" size="medium" @click="handleCommand"/>
+      <ml-toolbar :items="data" direction="vertical" size="medium" @click="handleCommand"/>
     </el-col>
     <el-col :span="8">
-      <ml-toolbar :items="data" layout="vertical" size="small" @click="handleCommand"/>
+      <ml-toolbar :items="data" direction="vertical" size="small" @click="handleCommand"/>
     </el-col>
   </el-row>
 
