@@ -67,7 +67,7 @@ interface Props {
    * - vertical: arrange button vertically
    * - horizontal: arrange button horizontally
    */
-  layout?: 'vertical' | 'horizontal'
+  direction?: 'vertical' | 'horizontal'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -80,7 +80,7 @@ const emit = defineEmits({
 })
 
 const buttonGroupClass = computed(() => {
-  return props.layout === 'vertical' ? 'ml-vertical-toolbar-button-group' : 'ml-horizontal-toolbar-button-group'
+  return props.direction === 'vertical' ? 'ml-vertical-toolbar-button-group' : 'ml-horizontal-toolbar-button-group'
 })
 
 const buttonIconSize = computed(() => {
@@ -114,7 +114,6 @@ const handleCommand = (command: string) => {
 .ml-vertical-toolbar-button-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
 }
 
 .ml-horizontal-toolbar-button-group {

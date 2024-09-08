@@ -1,6 +1,6 @@
 {
   "name": "@mlightcad/ui-components",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "One common UI component library based on Element Plus",
   "license": "MIT",
   "author": "MLight Lee <mlight.lee@outlook.com>",
@@ -33,6 +33,7 @@
     "build": "vue-tsc && vite build",
     "generate": "vite-ssg build",
     "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit"
   },
