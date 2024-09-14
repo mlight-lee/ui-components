@@ -1,5 +1,19 @@
 <script lang="ts" setup>
+import { MlDropdownMenuItem,MlLanguage } from '@mlightcad/ui-components'
+import { reactive } from 'vue'
+
 import { toggleDark } from '~/composables'
+
+const data = reactive<MlDropdownMenuItem[]>([
+  {
+    name: 'en',
+    text: 'English',
+  },
+  {
+    name: 'zh',
+    text: '中文',
+  }
+])
 </script>
 
 <template>
@@ -17,7 +31,6 @@ import { toggleDark } from '~/composables'
         <el-menu-item index="2-4-3">item three</el-menu-item>
       </el-sub-menu>
     </el-sub-menu>
-    <el-menu-item index="3" disabled>Info</el-menu-item>
     <el-menu-item h="full" @click="toggleDark()">
       <button
         class="border-none w-full bg-transparent cursor-pointer"
@@ -25,6 +38,9 @@ import { toggleDark } from '~/composables'
       >
         <i inline-flex i="dark:ep-moon ep-sunny" />
       </button>
+    </el-menu-item>
+    <el-menu-item>
+      <ml-language :languages="data" current="en" />
     </el-menu-item>
   </el-menu>
 </template>
