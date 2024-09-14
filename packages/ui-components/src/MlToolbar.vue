@@ -48,7 +48,7 @@ export interface MlButtonData {
 }
 
 /**
- * Properties of MLToolbar components
+ * Properties of MlToolbar component
  */
 interface Props {
   /**
