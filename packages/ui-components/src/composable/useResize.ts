@@ -1,8 +1,8 @@
-import { computed, onBeforeUnmount, onMounted, Ref,ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
 export function useResize(
-  targetRef: Ref<HTMLElement | null>, 
-  minSize: { width: number, height: number } = { width: 20, height: 40}
+  targetRef: Ref<HTMLElement | null>,
+  minSize: { width: number; height: number } = { width: 20, height: 40 }
 ) {
   const width = ref<number | null>(null)
   const height = ref<number | null>(null)
@@ -11,55 +11,87 @@ export function useResize(
   let initialHeight = 0
   let startX = 0
   let startY = 0
-  const resizeThreshold = 10 // Defines the area where resize can be triggered
-
-  const style = computed(() => {
-    return width.value === null && height.value === null
-      ? ''
-      : { width: width.value + 'px', height: height.value + 'px', transition: '' }
-  })
+  const resizeThreshold = 5 // Defines the area where resize can be triggered
+  const resizeDirection = ref<'right' | 'bottom' | 'corner' | null>(null) // Track the resize direction
 
   const onMouseMove = (event: MouseEvent) => {
-    if (!isResizing.value || !targetRef.value) return
+    if (!targetRef.value) return
 
-    const deltaX = event.clientX - startX
-    const deltaY = event.clientY - startY
+    if (!isResizing.value) {
+      const rect = targetRef.value.getBoundingClientRect()
+      const offsetX = event.clientX - rect.left
+      const offsetY = event.clientY - rect.top
 
-    // Update width and height only when resizing starts
-    if (width.value !== null && height.value !== null) {
-      width.value = Math.max(minSize.width, initialWidth + deltaX)
-      height.value = Math.max(minSize.height, initialHeight + deltaY)
+      // Check if the mouse is near the borders or the corner
+      const nearRight = offsetX >= rect.width - resizeThreshold
+      const nearBottom = offsetY >= rect.height - resizeThreshold
+
+      // Set the resize cursor based on the position
+      if (nearRight && nearBottom) {
+        targetRef.value.style.cursor = 'nwse-resize' // Change to bottom-right resize cursor
+        resizeDirection.value = 'corner'
+      } else if (nearRight) {
+        targetRef.value.style.cursor = 'ew-resize' // Change to right-side resize cursor
+        resizeDirection.value = 'right'
+      } else if (nearBottom) {
+        targetRef.value.style.cursor = 'ns-resize' // Change to bottom-side resize cursor
+        resizeDirection.value = 'bottom'
+      } else {
+        targetRef.value.style.cursor = '' // Reset cursor if not near the edges
+        resizeDirection.value = null
+      }
+    } else {
+      // While resizing, update dimensions based on the direction
+      const deltaX = event.clientX - startX
+      const deltaY = event.clientY - startY
+
+      if (
+        resizeDirection.value === 'right' ||
+        resizeDirection.value === 'corner'
+      ) {
+        width.value = Math.max(minSize.width, initialWidth + deltaX)
+        targetRef.value.style.width = width.value+ 'px'
+        targetRef.value.style.transition = ''
+      }
+      if (
+        resizeDirection.value === 'bottom' ||
+        resizeDirection.value === 'corner'
+      ) {
+        height.value = Math.max(minSize.height, initialHeight + deltaY)
+        targetRef.value.style.height = height.value+ 'px'
+        targetRef.value.style.transition = ''
+      }
     }
   }
 
   const onMouseDown = (event: MouseEvent) => {
-    if (!targetRef.value) return
+    if (!targetRef.value || !resizeDirection.value) return
 
     const rect = targetRef.value.getBoundingClientRect()
-    const offsetX = event.clientX - rect.left
-    const offsetY = event.clientY - rect.top
+    startX = event.clientX
+    startY = event.clientY
+    initialWidth = rect.width
+    initialHeight = rect.height
 
-    const nearRight = offsetX >= rect.width - resizeThreshold
-    const nearBottom = offsetY >= rect.height - resizeThreshold
+    // Set width and height before resizing starts
+    width.value = initialWidth
+    height.value = initialHeight
 
-    if (nearRight || nearBottom) {
-      isResizing.value = true
-      startX = event.clientX
-      startY = event.clientY
-      initialWidth = rect.width
-      initialHeight = rect.height
+    isResizing.value = true
 
-      // Set width and height before resizing starts
-      width.value = initialWidth
-      height.value = initialHeight
-
-      document.addEventListener('mousemove', onMouseMove)
-      document.addEventListener('mouseup', onMouseUp)
-    }
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
   }
 
   const onMouseUp = () => {
     isResizing.value = false
+    resizeDirection.value = null
+
+    // Reset the cursor to default after resizing
+    if (targetRef.value) {
+      targetRef.value.style.cursor = ''
+    }
+
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
   }
@@ -98,5 +130,5 @@ export function useResize(
     }
   })
 
-  return { width, height, isResizing, style }
+  return { width, height, isResizing }
 }

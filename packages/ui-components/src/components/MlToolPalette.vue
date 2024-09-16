@@ -1,6 +1,7 @@
 <template>
   <div
-    :style="[transitionStyle, style]"
+    ref="toolPaletteElement" 
+    :style="[transitionStyle]"
     class="ml-tool-palette-dialog"
     v-if="visible"
   >
@@ -30,7 +31,7 @@
         />
         <span class="ml-tool-palette-title">{{ props.title }}</span>
       </div>
-      <div ref="resizableElement" class="ml-tool-palette-content">
+      <div class="ml-tool-palette-content">
         <slot></slot>
       </div>
     </div>
@@ -73,8 +74,8 @@ const collapsed = ref<boolean>(false)
 const titleBarElement = ref<HTMLElement | null>(null)
 
 const { movement } = useDrag(titleBarElement)
-const resizableElement = ref(null)
-const { style } = useResize(resizableElement)
+const toolPaletteElement = ref(null)
+const { width: resizedWidth } = useResize(toolPaletteElement)
 
 // Width of the dialog when collapsed
 const collapsedWidth = computed(() => {
@@ -83,27 +84,28 @@ const collapsedWidth = computed(() => {
 
 // Width of the dialog when collapsed
 const expandedWidth = computed(() => {
-  return `${props.width}px`
+  return resizedWidth.value ? `${resizedWidth.value}px` : `${props.width}px`
 })
 
 // Styles for collapsed and expanded dialog
 const transitionStyle = computed(() => {
-  // Adjust position and transition for collapsing/expanding
-  return collapsed.value
-    ? {
-        width: collapsedWidth.value,
-        transition: 'width 0.3s',
-        transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
-      }
-    : {
-        width: expandedWidth.value,
-        transition: 'width 0.3s',
-        transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
-      }
+  // Adjust position for collapsing/expanding
+  return {
+    transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
+  }
 })
 
 const handleCollapsed = (value: boolean) => {
   collapsed.value = value
+  if (toolPaletteElement.value) {
+    const element = toolPaletteElement.value as HTMLElement
+    if (value) {
+      element.style.width = collapsedWidth.value
+    } else {
+      element.style.width = expandedWidth.value
+    }
+    element.style.transition = 'width 0.3s'
+  }
 }
 
 const handleClose = () => {
@@ -120,7 +122,6 @@ const handleClose = () => {
   position: absolute;
   border: 1px solid;
   border-radius: 4px;
-  resize: both;
 }
 
 .ml-tool-palette-dialog-icon {
@@ -130,7 +131,6 @@ const handleClose = () => {
 .ml-tool-palette-dialog-layout {
   display: flex;
   height: 100%;
-  resize: both;
 }
 
 .ml-tool-palette-title-bar {
@@ -156,6 +156,8 @@ const handleClose = () => {
 }
 
 .ml-tool-palette-content {
+  pointer-events: none; /* Prevents the text from interfering with mousedown */
+  user-select: none; /* Prevent text selection */
   flex-grow: 1;
   display: flex;
   justify-content: space-around;

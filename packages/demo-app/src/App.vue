@@ -3,7 +3,7 @@
     <BaseHeader />
     <div class="flex main-container">
       <div w="full" py="4">
-        <HelloWorld msg="Hello Vue 3 + Element Plus + Vite" />
+        <HelloWorld />
       </div>
     </div>
   </el-config-provider>
