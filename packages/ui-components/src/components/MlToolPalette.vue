@@ -1,19 +1,36 @@
 <template>
   <div
-    ref="draggable"
-    :style="dialogStyle"
+    :style="[transitionStyle, style]"
     class="ml-tool-palette-dialog"
     v-if="visible"
   >
     <div class="ml-tool-palette-dialog-layout">
-      <div class="ml-tool-palette-title-bar">
-        <el-icon :size="18" class="ml-tool-palette-dialog-icon" @click="handleClose">
-          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="M764.288 214.592L512 466.88L259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512L214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z"/></svg>
+      <div ref="titleBarElement" class="ml-tool-palette-title-bar">
+        <el-icon
+          :size="18"
+          class="ml-tool-palette-dialog-icon"
+          @click="handleClose"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            viewBox="0 0 1024 1024"
+          >
+            <path
+              fill="currentColor"
+              d="M764.288 214.592L512 466.88L259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512L214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z"
+            />
+          </svg>
         </el-icon>
-        <ml-collapse class="ml-tool-palette-dialog-icon" v-model="collapsed" @change="handleCollapsed" />
+        <ml-collapse
+          class="ml-tool-palette-dialog-icon"
+          v-model="collapsed"
+          @change="handleCollapsed"
+        />
         <span class="ml-tool-palette-title">{{ props.title }}</span>
       </div>
-      <div class="ml-tool-palette-content">
+      <div ref="resizableElement" class="ml-tool-palette-content">
         <slot></slot>
       </div>
     </div>
@@ -24,12 +41,13 @@
 import { computed, ref } from 'vue'
 
 import { useDrag } from '../composable/useDrag'
+import { useResize } from '../composable/useResize'
 import MlCollapse from './MlCollapse.vue'
 
 /**
  * Properties of MlToolPalette component
  */
- interface Props {
+interface Props {
   /**
    * The title of tool palette dialog
    */
@@ -52,8 +70,11 @@ const visible = defineModel({ default: true })
 
 const widthOfTitleBar = 20
 const collapsed = ref<boolean>(false)
-const draggable = ref<HTMLElement | null>(null)
-const { position, initialPosition } = useDrag(draggable, visible)
+const titleBarElement = ref<HTMLElement | null>(null)
+
+const { movement } = useDrag(titleBarElement)
+const resizableElement = ref(null)
+const { style } = useResize(resizableElement)
 
 // Width of the dialog when collapsed
 const collapsedWidth = computed(() => {
@@ -66,20 +87,18 @@ const expandedWidth = computed(() => {
 })
 
 // Styles for collapsed and expanded dialog
-const dialogStyle = computed(() => {
+const transitionStyle = computed(() => {
   // Adjust position and transition for collapsing/expanding
   return collapsed.value
     ? {
         width: collapsedWidth.value,
         transition: 'width 0.3s',
-        [props.direction]: '0',
-        transform: `translate(${position.value.x - initialPosition.value.x}px, ${position.value.y - initialPosition.value.y}px)`
+        transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
       }
     : {
         width: expandedWidth.value,
         transition: 'width 0.3s',
-        [props.direction]: '0',
-        transform: `translate(${position.value.x - initialPosition.value.x}px, ${position.value.y - initialPosition.value.y}px)`
+        transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
       }
 })
 
@@ -101,15 +120,17 @@ const handleClose = () => {
   position: absolute;
   border: 1px solid;
   border-radius: 4px;
+  resize: both;
 }
 
 .ml-tool-palette-dialog-icon {
-  margin-bottom: 5px;
+  border-bottom: 1px solid;
 }
 
 .ml-tool-palette-dialog-layout {
   display: flex;
   height: 100%;
+  resize: both;
 }
 
 .ml-tool-palette-title-bar {
@@ -130,7 +151,7 @@ const handleClose = () => {
   font-size: small;
   user-select: none; /* Prevent text selection */
   white-space: nowrap; /* Prevent text from wrapping to the next line */
-  overflow: hidden;    /* Hide the overflowing text */
+  overflow: hidden; /* Hide the overflowing text */
   text-overflow: ellipsis; /* Show three dots (...) for overflowing text */
 }
 
@@ -140,7 +161,6 @@ const handleClose = () => {
   justify-content: space-around;
   align-items: center;
   background-color: white;
-  min-width: 0px;
-  overflow: hidden;  /* Hides content when width becomes 0 */
+  overflow: hidden; /* Hides content when width becomes 0 */
 }
 </style>

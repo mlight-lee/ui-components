@@ -1,9 +1,17 @@
 import MlCollapse from './components/MlCollapse.vue'
 import MlDropdown from './components/MlDropdown.vue'
 import MlLanguage from './components/MlLanguage.vue'
+import MlResize from './components/MlResize.vue'
 import MlToolbar from './components/MlToolbar.vue'
 import MlToolPalette from './components/MlToolPalette.vue'
-export { MlCollapse, MlDropdown, MlLanguage, MlToolbar, MlToolPalette }
+export {
+  MlCollapse,
+  MlDropdown,
+  MlLanguage,
+  MlResize,
+  MlToolbar,
+  MlToolPalette
+}
 export type { MlDropdownMenuItem } from './components/MlDropdown.vue'
 export type { MlButtonData } from './components/MlToolbar.vue'
 
@@ -14,6 +22,7 @@ export default {
     app.component('MlCollapse', MlDropdown)
     app.component('MlDropdown', MlDropdown)
     app.component('MlLanguage', MlLanguage)
+    app.component('MlResize', MlResize)
     app.component('MlToolbar', MlToolbar)
     app.component('MlToolPalette', MlToolPalette)
   }

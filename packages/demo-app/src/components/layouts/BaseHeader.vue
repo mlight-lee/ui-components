@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { Menu as IconMenu } from '@element-plus/icons-vue'
-import { MlDropdownMenuItem, MlLanguage, MlToolPalette } from '@mlightcad/ui-components'
+import {
+  MlDropdownMenuItem,
+  MlLanguage,
+  MlToolPalette
+} from '@mlightcad/ui-components'
 import { ref } from 'vue'
 import { reactive } from 'vue'
 
@@ -10,11 +14,11 @@ const toolPaletteVisible = ref<boolean>(false)
 const data = reactive<MlDropdownMenuItem[]>([
   {
     name: 'en',
-    text: 'English',
+    text: 'English'
   },
   {
     name: 'zh',
-    text: '中文',
+    text: '中文'
   }
 ])
 
@@ -41,7 +45,11 @@ const handleToolPalette = () => {
       <ml-language :languages="data" current="en" />
     </el-menu-item>
   </el-menu>
-  <ml-tool-palette class="tool-palette" v-model="toolPaletteVisible" title="Tool Palette Test">
+  <ml-tool-palette
+    class="tool-palette"
+    v-model="toolPaletteVisible"
+    title="Tool Palette Test"
+  >
     <span>Tool Palette Test</span>
   </ml-tool-palette>
 </template>

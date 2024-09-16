@@ -1,9 +1,23 @@
-import { nextTick, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  Ref,
+  ref,
+  watch
+} from 'vue'
 
-export function useDrag(targetRef: Ref<HTMLElement | null>, isVisible: Ref<boolean>) {
+export function useDrag(targetRef: Ref<HTMLElement | null>) {
   const isDragging = ref(false)
   const position = ref({ x: 0, y: 0 })
   const initialPosition = ref({ x: 0, y: 0 }) // Initial CSS position
+  const movement = computed(() => {
+    return {
+      x: position.value.x - initialPosition.value.x,
+      y: position.value.y - initialPosition.value.y
+    }
+  })
   let frameId: number | null = null
 
   const setInitialPosition = () => {
@@ -46,8 +60,14 @@ export function useDrag(targetRef: Ref<HTMLElement | null>, isVisible: Ref<boole
         const newX = position.value.x + e.movementX
         const newY = position.value.y + e.movementY
 
-        position.value.x = Math.max(0, Math.min(newX, viewportWidth - elementWidth - 1))
-        position.value.y = Math.max(0, Math.min(newY, viewportHeight - elementHeight - 1))
+        position.value.x = Math.max(
+          0,
+          Math.min(newX, viewportWidth - elementWidth - 1)
+        )
+        position.value.y = Math.max(
+          0,
+          Math.min(newY, viewportHeight - elementHeight - 1)
+        )
         frameId = null // Reset for the next frame
       })
     }
@@ -64,7 +84,7 @@ export function useDrag(targetRef: Ref<HTMLElement | null>, isVisible: Ref<boole
   }
 
   onMounted(() => {
-    if (isVisible.value) {
+    if (targetRef.value) {
       nextTick(() => {
         setInitialPosition() // Set initial position from CSS
         addEventListeners()
@@ -82,9 +102,9 @@ export function useDrag(targetRef: Ref<HTMLElement | null>, isVisible: Ref<boole
     }
   })
 
-  // Watch for visibility changes
-  watch(isVisible, (newValue) => {
-    if (newValue) {
+  // Watch for changes in the targetRef, to handle cases where v-if makes the element appear/disappear
+  watch(targetRef, newVal => {
+    if (newVal) {
       nextTick(() => {
         addEventListeners()
       })
@@ -95,7 +115,6 @@ export function useDrag(targetRef: Ref<HTMLElement | null>, isVisible: Ref<boole
 
   return {
     isDragging,
-    position,
-    initialPosition
+    movement
   }
 }

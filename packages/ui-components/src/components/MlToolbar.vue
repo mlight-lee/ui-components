@@ -1,10 +1,10 @@
 <template>
   <el-button-group :class="buttonGroupClass">
-    <el-tooltip         
+    <el-tooltip
       v-for="(item, index) in items"
       :key="item.text"
       :content="buttonTooltip(item)"
-      :hide-after=0
+      :hide-after="0"
     >
       <el-button
         class="ml-toolbar-button"
@@ -15,7 +15,9 @@
         <div>
           <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
           <el-icon :size="buttonIconSize" v-html="item.icon" />
-          <div v-if="isShowButtonText" class="ml-toolbar-button-text">{{ item.text }}</div>
+          <div v-if="isShowButtonText" class="ml-toolbar-button-text">
+            {{ item.text }}
+          </div>
         </div>
       </el-button>
     </el-tooltip>
@@ -61,7 +63,7 @@ interface Props {
    * - medium: 50px
    * - large: 70px
    */
-  size?: 'small' | 'medium'| 'large'
+  size?: 'small' | 'medium' | 'large'
   /**
    * Layout type.
    * - vertical: arrange button vertically
@@ -80,15 +82,17 @@ const emit = defineEmits({
 })
 
 const buttonGroupClass = computed(() => {
-  return props.direction === 'vertical' ? 'ml-vertical-toolbar-button-group' : 'ml-horizontal-toolbar-button-group'
+  return props.direction === 'vertical'
+    ? 'ml-vertical-toolbar-button-group'
+    : 'ml-horizontal-toolbar-button-group'
 })
 
 const buttonIconSize = computed(() => {
-  return (props.size === 'small') ? 20 : 30
+  return props.size === 'small' ? 20 : 30
 })
 
 const buttonSize = computed(() => {
-  switch(props.size) {
+  switch (props.size) {
     case 'small':
       return 30
     case 'medium':
@@ -102,7 +106,7 @@ const buttonTooltip = (item: MlButtonData) => {
 }
 
 const isShowButtonText = computed(() => {
-  return (props.size === 'large')
+  return props.size === 'large'
 })
 
 const handleCommand = (command: string) => {
