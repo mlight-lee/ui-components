@@ -35,37 +35,22 @@ const handleCommand = (command: string) => {
 </script>
 
 <template>
-  <el-row :gutter="20" justify="center" class="toolbar-row">
-    <el-col :span="8">
-      <ml-toolbar :items="data" direction="horizontal" @click="handleCommand"/>
-    </el-col>
-    <el-col :span="8">
-      <ml-toolbar :items="data" direction="horizontal" size="medium" @click="handleCommand"/>
-    </el-col>
-    <el-col :span="8">
-      <ml-toolbar :items="data" direction="horizontal" size="small" @click="handleCommand"/>
-    </el-col>
-  </el-row>
-    
-  <el-row :gutter="20" justify="center" class="toolbar-row">
-    <el-col :span="8">
-      <ml-toolbar :items="data" direction="vertical" @click="handleCommand"/>
-    </el-col>
-    <el-col :span="8">
-      <ml-toolbar :items="data" direction="vertical" size="medium" @click="handleCommand"/>
-    </el-col>
-    <el-col :span="8">
-      <ml-toolbar :items="data" direction="vertical" size="small" @click="handleCommand"/>
-    </el-col>
-  </el-row>
-
+  <ml-toolbar class="horizontal-toolbar-container" :items="data" direction="horizontal" @click="handleCommand"/>
+  <ml-toolbar class="vertical-toolbar-container" :items="data" direction="vertical" size="small" @click="handleCommand"/>
 </template>
 
-<style>
-.toolbar-row {
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+<style scoped>
+.horizontal-toolbar-container {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.vertical-toolbar-container {
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

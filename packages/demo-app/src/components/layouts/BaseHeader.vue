@@ -1,9 +1,12 @@
 <script lang="ts" setup>
-import { MlDropdownMenuItem,MlLanguage } from '@mlightcad/ui-components'
+import { Menu as IconMenu } from '@element-plus/icons-vue'
+import { MlDropdownMenuItem, MlLanguage, MlToolPalette } from '@mlightcad/ui-components'
+import { ref } from 'vue'
 import { reactive } from 'vue'
 
 import { toggleDark } from '~/composables'
 
+const toolPaletteVisible = ref<boolean>(false)
 const data = reactive<MlDropdownMenuItem[]>([
   {
     name: 'en',
@@ -14,23 +17,18 @@ const data = reactive<MlDropdownMenuItem[]>([
     text: '中文',
   }
 ])
+
+const handleToolPalette = () => {
+  toolPaletteVisible.value = true
+}
 </script>
 
 <template>
   <el-menu class="el-menu-demo" mode="horizontal">
-    <el-menu-item index="1">Element Plus</el-menu-item>
-    <el-sub-menu index="2">
-      <template #title>Workspace</template>
-      <el-menu-item index="2-1">item one</el-menu-item>
-      <el-menu-item index="2-2">item two</el-menu-item>
-      <el-menu-item index="2-3">item three</el-menu-item>
-      <el-sub-menu index="2-4">
-        <template #title>item four</template>
-        <el-menu-item index="2-4-1">item one</el-menu-item>
-        <el-menu-item index="2-4-2">item two</el-menu-item>
-        <el-menu-item index="2-4-3">item three</el-menu-item>
-      </el-sub-menu>
-    </el-sub-menu>
+    <el-menu-item index="1">MlightCAD</el-menu-item>
+    <el-menu-item index="2" @click="handleToolPalette">
+      <el-icon><icon-menu /></el-icon>
+    </el-menu-item>
     <el-menu-item h="full" @click="toggleDark()">
       <button
         class="border-none w-full bg-transparent cursor-pointer"
@@ -43,4 +41,15 @@ const data = reactive<MlDropdownMenuItem[]>([
       <ml-language :languages="data" current="en" />
     </el-menu-item>
   </el-menu>
+  <ml-tool-palette class="tool-palette" v-model="toolPaletteVisible" title="Tool Palette Test">
+    <span>Tool Palette Test</span>
+  </ml-tool-palette>
 </template>
+
+<style scoped>
+.tool-palette {
+  position: fixed;
+  top: 55px;
+  left: 0px;
+}
+</style>
