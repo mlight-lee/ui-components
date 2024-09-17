@@ -9,19 +9,13 @@ import {
 } from 'vue'
 
 /**
- * Drag `targetRef` element to move `elementToMove` element
+ * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
- * @param elementToMove Input element to move when dragging. If not specified, `targetRef` will be the 
- * element to move.
  * @returns Return thefollowing data
- * - position: new position of `elementToMove` element
- * - movement: movement based on the original position of `elementToMove` element
  * - isDragging: dragging state
+ * - movement: movement based on the original position of the element
  */
-export function useDrag(
-  targetRef: Ref<HTMLElement | null>, 
-  elementToMove: Ref<HTMLElement | null> = ref(null)
-) {
+export function useDrag(targetRef: Ref<HTMLElement | null>) {
   const isDragging = ref(false)
   const position = ref({ x: 0, y: 0 })
   const initialPosition = ref({ x: 0, y: 0 }) // Initial CSS position
@@ -82,12 +76,6 @@ export function useDrag(
           Math.min(newY, viewportHeight - elementHeight - 1)
         )
         frameId = null // Reset for the next frame
-
-        // Move the element
-        const temp = elementToMove.value || element
-        const rect = temp.getBoundingClientRect()
-        temp.style.left = rect.left + e.movementX + 'px'
-        temp.style.top = rect.top + e.movementY + 'px'
       })
     }
   }
