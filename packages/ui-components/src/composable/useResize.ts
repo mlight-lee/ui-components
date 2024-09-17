@@ -1,5 +1,14 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
+/**
+ * Resize the specified element when moving mouse to its right border, bottom border, and right-bottom corner.
+ * @param targetRef Input element to resize
+ * @param minSize Input minimum size to resize.
+ * @returns Return the following data.
+ * - width: new width of the element after resized
+ * - height: new height of the element after resized
+ * - isResizing: flag to indicate whether the element is in resizing state
+ */
 export function useResize(
   targetRef: Ref<HTMLElement | null>,
   minSize: { width: number; height: number } = { width: 20, height: 40 }

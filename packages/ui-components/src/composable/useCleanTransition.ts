@@ -4,6 +4,10 @@ import {
   Ref,
 } from 'vue'
 
+/**
+ * Clean transition style in the specified element
+ * @param targetRef Input element to clean its transition style
+ */
 export function useCleanTransition(targetRef: Ref<HTMLElement | null>) {
   // Clean transition logic
   function cleanTransition() {

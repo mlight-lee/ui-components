@@ -12,7 +12,7 @@ import {
  * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
  * @returns Return thefollowing data
- * - isDragging: dragging state
+ * - isDragging: flag to indicate whether the element is in dragging state
  * - movement: movement based on the original position of the element
  */
 export function useDrag(targetRef: Ref<HTMLElement | null>) {

@@ -15,6 +15,10 @@ interface Rect {
 
 /**
  * Get initial size and position from CSS
+ * @param targetRef Input element to get its initial size and position from CSS
+ * @returns Return the following data
+ * - initialRect: the initial size and position of the element
+ * - isIntialized: flag to indicate whether the size and position of the element is initialized
  */
 export function useInitialRect(targetRef: Ref<HTMLElement | null>) {
   // Initial CSS size and position

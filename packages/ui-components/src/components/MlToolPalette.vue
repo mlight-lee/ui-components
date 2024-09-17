@@ -1,7 +1,7 @@
 <template>
   <div
     ref="toolPaletteElement" 
-    :style="[transitionStyle]"
+    :style="[movingStyle, resizedStyle]"
     class="ml-tool-palette-dialog"
     v-if="visible"
   >
@@ -42,6 +42,7 @@
 import { computed, ref } from 'vue'
 
 import { useDrag } from '../composable/useDrag'
+import { useInitialRect } from '../composable/useInitialRect'
 import { useResize } from '../composable/useResize'
 import MlCollapse from './MlCollapse.vue'
 
@@ -53,43 +54,41 @@ interface Props {
    * The title of tool palette dialog
    */
   title?: string
-  /**
-   * The location of title bar.
-   * - left: title bar is at the left border of the dialog
-   * - left: title bar is at the right border of the dialog
-   */
-  direction?: 'left' | 'right'
-  width?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   title: '',
-  direction: 'left',
-  width: 300
 })
 const visible = defineModel({ default: true })
 
 const widthOfTitleBar = 20
 const collapsed = ref<boolean>(false)
 const titleBarElement = ref<HTMLElement | null>(null)
-  const toolPaletteElement = ref(null)
+const toolPaletteElement = ref(null)
 
 const { movement } = useDrag(titleBarElement)
-const { width: resizedWidth } = useResize(toolPaletteElement)
+const { initialRect } = useInitialRect(toolPaletteElement)
+const { width: resizedWidth, height: resizedHeight } = useResize(toolPaletteElement)
 
 // Width of the dialog when collapsed
 const collapsedWidth = computed(() => {
   return `${widthOfTitleBar}px`
 })
 
-// Width of the dialog when collapsed
-const expandedWidth = computed(() => {
-  return resizedWidth.value ? `${resizedWidth.value}px` : `${props.width}px`
+// Resized style
+const resizedStyle = computed(() => {
+  const result = (collapsed.value) ? {
+    width: collapsedWidth.value,
+    height: resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
+  } : {
+    width: resizedWidth.value ? `${resizedWidth.value}px` : `${initialRect.value.width}px`,
+    height: resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
+  }
+  return result
 })
 
-// Styles for collapsed and expanded dialog
-const transitionStyle = computed(() => {
-  // Adjust position for collapsing/expanding
+// Styles for moving
+const movingStyle = computed(() => {
   return {
     transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
   }
@@ -99,11 +98,6 @@ const handleCollapsed = (value: boolean) => {
   collapsed.value = value
   if (toolPaletteElement.value) {
     const element = toolPaletteElement.value as HTMLElement
-    if (value) {
-      element.style.width = collapsedWidth.value
-    } else {
-      element.style.width = expandedWidth.value
-    }
     element.style.transition = 'width 0.3s'
   }
 }
