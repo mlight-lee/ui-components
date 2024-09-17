@@ -72,9 +72,9 @@ const visible = defineModel({ default: true })
 const widthOfTitleBar = 20
 const collapsed = ref<boolean>(false)
 const titleBarElement = ref<HTMLElement | null>(null)
+  const toolPaletteElement = ref(null)
 
 const { movement } = useDrag(titleBarElement)
-const toolPaletteElement = ref(null)
 const { width: resizedWidth } = useResize(toolPaletteElement)
 
 // Width of the dialog when collapsed
