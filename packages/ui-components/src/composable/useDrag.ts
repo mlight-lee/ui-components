@@ -156,6 +156,7 @@ export function useDrag(
 
   return {
     isDragging,
-    movement
+    movement,
+    position
   }
 }

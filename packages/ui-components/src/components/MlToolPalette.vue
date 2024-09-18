@@ -42,12 +42,12 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
+import { useBoundingRect, WIDTH_OF_TITLE_BAR } from '../composable/useBoundingRect'
 import { DragOptions, useDrag } from '../composable/useDrag'
-import { useInitialRect } from '../composable/useInitialRect'
-import { useResize } from '../composable/useResize'
 import { useTransition } from '../composable/useTransition'
 import { useWindowSize } from '../composable/useWindowSize'
 import MlCollapse from './MlCollapse.vue'
+
 
 type TitleBarOrientation = 'left' | 'right'
 
@@ -82,8 +82,6 @@ const props = withDefaults(defineProps<Props>(), {
 const visible = defineModel({ default: true })
 const emit = defineEmits<Events>()
 
-// Width of the title bar
-const widthOfTitleBar = 20
 // Flag to indicate whether the tool palette is collapsed
 const collapsed = ref<boolean>(false)
 // Flag to indicate whether the tool palette is docked on the left/right border of the window
@@ -95,27 +93,19 @@ const titleBarElement = ref<HTMLElement | null>(null)
 // Reference to tool palette HTML element
 const toolPaletteElement = ref<HTMLElement | null>(null)
 
-const { initialRect } = useInitialRect(toolPaletteElement)
-
 // Flag to reverse cllapse icon
 const reversed = computed(() => {
   return orientation.value === 'right'
 })
-const { width: resizedWidth, height: resizedHeight } = useResize(toolPaletteElement, reversed)
+const { rect: toolPaletteRect } = useBoundingRect(toolPaletteElement, reversed, collapsed)
 
 // Get current window size
 const { windowWidth } = useWindowSize()
 
-// Width of the tool palette
-const widthOfToolPalette = computed(() => {
-  return collapsed.value ? widthOfTitleBar :
-     resizedWidth.value ? resizedWidth.value : initialRect.value.width
-})
 // Maximum left position of right border of the tool palette
 const maxLeftOfToolPalette = computed(() => {
-  return windowWidth.value - (widthOfToolPalette.value || 0) - widthOfTitleBar
+  return windowWidth.value - (toolPaletteRect.value.width || 0) - WIDTH_OF_TITLE_BAR
 })
-
 const dragOptions = computed<DragOptions>(() => {
   return {
     min: 0,
@@ -129,12 +119,12 @@ useTransition(toolPaletteElement)
 
 // Resized style
 const resizedStyle = computed(() => {
-  const width = `${widthOfToolPalette.value}px`
-
-  const height = docked.value ? '100%' :
-    resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
-
-  return { width, height }
+  return {
+    left: `${toolPaletteRect.value.left}px`,
+    top: `${toolPaletteRect.value.top}px`,
+    width: `${toolPaletteRect.value.width}px`, 
+    height: docked.value ? '100%' : `${toolPaletteRect.value.height}px` 
+  }
 })
 
 const handleCollapsed = (value: boolean) => {
@@ -169,6 +159,8 @@ watch(movement, newVal => {
     } else {
       docked.value = false
     }
+    toolPaletteRect.value.left = rect.left
+    toolPaletteRect.value.top = rect.top
   }
 })
 </script>

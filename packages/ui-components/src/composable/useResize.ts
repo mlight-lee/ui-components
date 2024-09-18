@@ -1,5 +1,7 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
+import { Rect } from './rect';
+
 /**
  * Resize the specified element when moving mouse to its 
  * - right border, bottom border, and right-bottom corner if argument `reverse` is false
@@ -17,10 +19,14 @@ export function useResize(
   reverse: Ref<boolean> = ref(false),
   minSize: { width: number; height: number } = { width: 20, height: 40 }
 ) {
-  const width = ref<number | null>(null)
-  const height = ref<number | null>(null)
+  const resizedBoundingRect = ref<Rect>({
+    width: null,
+    height: null,
+    left: null,
+    top: null 
+  })
   const isResizing = ref(false)
-  let initialLeft = 0
+  const initialLeft = 0
   let initialWidth = 0
   let initialHeight = 0
   let startX = 0
@@ -70,23 +76,24 @@ export function useResize(
         resizeDirection.value === 'left' ||
         resizeDirection.value === 'corner'
       ) {
-        width.value = Math.max(minSize.width, initialWidth - deltaX)
-        targetRef.value.style.left = initialLeft + deltaX + 'px'
-        targetRef.value.style.width = width.value + 'px'
+        resizedBoundingRect.value.width = Math.max(minSize.width, initialWidth - deltaX)
+        resizedBoundingRect.value.left = initialLeft + deltaX
+        targetRef.value.style.left = resizedBoundingRect.value.left + 'px'
+        targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
       }
       if (
         resizeDirection.value === 'right' ||
         resizeDirection.value === 'corner'
       ) {
-        width.value = Math.max(minSize.width, initialWidth + deltaX)
-        targetRef.value.style.width = width.value + 'px'
+        resizedBoundingRect.value.width = Math.max(minSize.width, initialWidth + deltaX)
+        targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
       }
       if (
         resizeDirection.value === 'bottom' ||
         resizeDirection.value === 'corner'
       ) {
-        height.value = Math.max(minSize.height, initialHeight + deltaY)
-        targetRef.value.style.height = height.value + 'px'
+        resizedBoundingRect.value.height = Math.max(minSize.height, initialHeight + deltaY)
+        targetRef.value.style.height = resizedBoundingRect.value.height + 'px'
       }
     }
   }
@@ -101,12 +108,11 @@ export function useResize(
     initialWidth = rect.width
     initialHeight = rect.height
 
-    const computedStyle = window.getComputedStyle(targetRef.value)
-    initialLeft = parseFloat(computedStyle.left)
-
     // Set width and height before resizing starts
-    width.value = initialWidth
-    height.value = initialHeight
+    resizedBoundingRect.value.width = initialWidth
+    resizedBoundingRect.value.height = initialHeight
+    resizedBoundingRect.value.left = rect.left
+    resizedBoundingRect.value.top = rect.top
 
     isResizing.value = true
 
@@ -161,5 +167,5 @@ export function useResize(
     }
   })
 
-  return { width, height, isResizing }
+  return { rect: resizedBoundingRect, isResizing }
 }
