@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import svgLoader from 'vite-svg-loader'
 import { resolve } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -12,6 +13,7 @@ export default defineConfig(() => {
     base: './',
     plugins: [
       vue(),
+      svgLoader(),
       cssInjectedByJsPlugin(),
       AutoImport({
         resolvers: [ElementPlusResolver()]

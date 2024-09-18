@@ -60,7 +60,6 @@ export function useResize(
       ) {
         width.value = Math.max(minSize.width, initialWidth + deltaX)
         targetRef.value.style.width = width.value+ 'px'
-        targetRef.value.style.transition = ''
       }
       if (
         resizeDirection.value === 'bottom' ||
@@ -68,7 +67,6 @@ export function useResize(
       ) {
         height.value = Math.max(minSize.height, initialHeight + deltaY)
         targetRef.value.style.height = height.value+ 'px'
-        targetRef.value.style.transition = ''
       }
     }
   }

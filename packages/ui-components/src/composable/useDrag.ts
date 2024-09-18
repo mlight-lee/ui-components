@@ -9,13 +9,30 @@ import {
 } from 'vue'
 
 /**
+ * Options to use `useDrag`
+ */
+export interface DragOptions {
+  /**
+   * The minimum distance from the left border of the element to the left border of the window
+   */
+  min: number
+  /**
+   * The minimum distance from the left border of the element to the right border of the window
+   */
+  max: number
+}
+
+/**
  * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
  * @returns Return thefollowing data
  * - isDragging: flag to indicate whether the element is in dragging state
  * - movement: movement based on the original position of the element
  */
-export function useDrag(targetRef: Ref<HTMLElement | null>) {
+export function useDrag(
+  targetRef: Ref<HTMLElement | null>,
+  options?: Ref<DragOptions>
+) {
   const isDragging = ref(false)
   const position = ref({ x: 0, y: 0 })
   const initialPosition = ref({ x: 0, y: 0 }) // Initial CSS position
@@ -68,8 +85,12 @@ export function useDrag(targetRef: Ref<HTMLElement | null>) {
         const newY = position.value.y + e.movementY
 
         position.value.x = Math.max(
-          0,
+          options ? options.value.min : 0,
           Math.min(newX, viewportWidth - elementWidth - 1)
+        )
+        position.value.x = Math.min(
+          options ? options.value.max : 0,
+          position.value.x
         )
         position.value.y = Math.max(
           0,

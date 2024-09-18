@@ -5,7 +5,7 @@
     class="ml-tool-palette-dialog"
     v-if="visible"
   >
-    <div class="ml-tool-palette-dialog-layout">
+    <div class="ml-tool-palette-dialog-layout" :class="orientation">
       <div ref="titleBarElement" class="ml-tool-palette-title-bar">
         <el-icon
           :size="18"
@@ -27,6 +27,7 @@
         <ml-collapse
           class="ml-tool-palette-dialog-icon"
           v-model="collapsed"
+          :reverse="reversed"
           @change="handleCollapsed"
         />
         <span class="ml-tool-palette-title">{{ props.title }}</span>
@@ -39,12 +40,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import { useDrag } from '../composable/useDrag'
+import { DragOptions, useDrag } from '../composable/useDrag'
 import { useInitialRect } from '../composable/useInitialRect'
 import { useResize } from '../composable/useResize'
+import { useTransition } from '../composable/useTransition'
+import { useWindowSize } from '../composable/useWindowSize'
 import MlCollapse from './MlCollapse.vue'
+
+type TitleBarOrientation = 'left' | 'right'
 
 /**
  * Properties of MlToolPalette component
@@ -54,37 +59,71 @@ interface Props {
    * The title of tool palette dialog
    */
   title?: string
+  /**
+   * The initial position of the tool palette.
+   */
+  pos?: { x: number, y: number} 
 }
 
+// Attributes of tool palette component
 const props = withDefaults(defineProps<Props>(), {
   title: '',
+  orientation: 'left'
 })
+// Flag to control whether the tool palette is visible
 const visible = defineModel({ default: true })
 
+// Width of the title bar
 const widthOfTitleBar = 20
+// Flag to indicate whether the tool palette is collapsed
 const collapsed = ref<boolean>(false)
+// Flag to indicate whether the tool palette is docked on the left/right border of the window
+const docked = ref<boolean>(false)
+// The orientation of the title bar. For now, 'left' and 'right' are supported.
+const orientation = ref<TitleBarOrientation>('left')
+// Referernce to title bar HTML element of tool palette
 const titleBarElement = ref<HTMLElement | null>(null)
+// Reference to tool palette HTML element
 const toolPaletteElement = ref(null)
 
-const { movement } = useDrag(titleBarElement)
 const { initialRect } = useInitialRect(toolPaletteElement)
 const { width: resizedWidth, height: resizedHeight } = useResize(toolPaletteElement)
+// Get current window size
+const { windowWidth } = useWindowSize()
 
-// Width of the dialog when collapsed
-const collapsedWidth = computed(() => {
-  return `${widthOfTitleBar}px`
+// Width of the tool palette
+const widthOfToolPalette = computed(() => {
+  return collapsed.value ? widthOfTitleBar :
+     resizedWidth.value ? resizedWidth.value : initialRect.value.width
+})
+// Maximum left position of right border of the tool palette
+const maxLeftOfToolPalette = computed(() => {
+  return windowWidth.value - (widthOfToolPalette.value || 0) - widthOfTitleBar
+})
+
+const dragOptions = computed<DragOptions>(() => {
+  return {
+    min: 0,
+    max: maxLeftOfToolPalette.value
+  }
+})
+const { movement } = useDrag(titleBarElement, dragOptions)
+
+useTransition(toolPaletteElement)
+
+// Flag to reverse cllapse icon
+const reversed = computed(() => {
+  return orientation.value === 'right'
 })
 
 // Resized style
 const resizedStyle = computed(() => {
-  const result = (collapsed.value) ? {
-    width: collapsedWidth.value,
-    height: resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
-  } : {
-    width: resizedWidth.value ? `${resizedWidth.value}px` : `${initialRect.value.width}px`,
-    height: resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
-  }
-  return result
+  const width = `${widthOfToolPalette.value}px`
+
+  const height = docked.value ? '100%' :
+    resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
+
+  return { width, height }
 })
 
 // Styles for moving
@@ -98,13 +137,32 @@ const handleCollapsed = (value: boolean) => {
   collapsed.value = value
   if (toolPaletteElement.value) {
     const element = toolPaletteElement.value as HTMLElement
-    element.style.transition = 'width 0.3s'
+    element.style.transition = 'width 0.3s ease'
   }
 }
 
 const handleClose = () => {
   visible.value = false
 }
+
+// Watch movement of tool palette to 
+// - Modify `docked` flag if the tool palette is on the left/right border of the window
+// - Modify `orientation` flag if 
+watch(movement, newVal => {
+  if (newVal && toolPaletteElement.value) {
+    const element = toolPaletteElement.value as HTMLElement
+    const rect = element.getBoundingClientRect()
+    if (rect.left <= dragOptions.value.min) {
+      orientation.value = 'left'
+      docked.value = true
+    } else if (rect.left >= dragOptions.value.max) {
+      orientation.value = 'right'
+      docked.value = true
+    } else {
+      docked.value = false
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -112,7 +170,6 @@ const handleClose = () => {
   cursor: default;
   width: 300px;
   min-width: var(--collapsed-width);
-  height: 150px;
   position: absolute;
   border: 1px solid;
   border-radius: 4px;
@@ -158,5 +215,23 @@ const handleClose = () => {
   align-items: center;
   background-color: white;
   overflow: hidden; /* Hides content when width becomes 0 */
+}
+
+/* When direction is 'left' */
+.ml-tool-palette-dialog-layout.left .ml-tool-palette-title-bar {
+  order: 1;
+}
+
+.ml-tool-palette-dialog-layout.left .ml-tool-palette-content {
+  order: 2;
+}
+
+/* When direction is 'right' */
+.ml-tool-palette-dialog-layout.right .ml-tool-palette-title-bar {
+  order: 2;
+}
+
+.ml-tool-palette-dialog-layout.right .ml-tool-palette-content {
+  order: 1;
 }
 </style>
