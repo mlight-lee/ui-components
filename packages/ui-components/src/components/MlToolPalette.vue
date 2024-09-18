@@ -42,7 +42,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import { useBoundingRect, WIDTH_OF_TITLE_BAR } from '../composable/useBoundingRect'
+import { useBoundingRect } from '../composable/useBoundingRect'
 import { DragOptions, useDrag } from '../composable/useDrag'
 import { useTransition } from '../composable/useTransition'
 import { useWindowSize } from '../composable/useWindowSize'
@@ -97,14 +97,13 @@ const toolPaletteElement = ref<HTMLElement | null>(null)
 const reversed = computed(() => {
   return orientation.value === 'right'
 })
-const { rect: toolPaletteRect } = useBoundingRect(toolPaletteElement, reversed, collapsed)
 
 // Get current window size
 const { windowWidth } = useWindowSize()
 
 // Maximum left position of right border of the tool palette
 const maxLeftOfToolPalette = computed(() => {
-  return windowWidth.value - (toolPaletteRect.value.width || 0) - WIDTH_OF_TITLE_BAR
+  return windowWidth.value - (toolPaletteRect.value.width || 0)
 })
 const dragOptions = computed<DragOptions>(() => {
   return {
@@ -114,6 +113,7 @@ const dragOptions = computed<DragOptions>(() => {
   }
 })
 const { movement } = useDrag(titleBarElement, dragOptions)
+const { rect: toolPaletteRect } = useBoundingRect(toolPaletteElement, reversed, collapsed, movement)
 
 useTransition(toolPaletteElement)
 
@@ -159,8 +159,6 @@ watch(movement, newVal => {
     } else {
       docked.value = false
     }
-    toolPaletteRect.value.left = rect.left
-    toolPaletteRect.value.top = rect.top
   }
 })
 </script>

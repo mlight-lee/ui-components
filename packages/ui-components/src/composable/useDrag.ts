@@ -8,6 +8,8 @@ import {
   watch
 } from 'vue'
 
+import { Position } from './rect'
+
 /**
  * Options to use `useDrag`
  */
@@ -38,8 +40,8 @@ export function useDrag(
   options?: Ref<DragOptions>
 ) {
   const isDragging = ref(false)
-  const position = ref({ x: 0, y: 0 })
-  const initialPosition = ref({ x: 0, y: 0 }) // Initial CSS position
+  const position = ref<Position>({ x: 0, y: 0 })
+  const initialPosition = ref<Position>({ x: 0, y: 0 }) // Initial CSS position
   const movement = computed(() => {
     return {
       x: position.value.x - initialPosition.value.x,
