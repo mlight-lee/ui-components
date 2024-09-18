@@ -1,8 +1,11 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
 /**
- * Resize the specified element when moving mouse to its right border, bottom border, and right-bottom corner.
+ * Resize the specified element when moving mouse to its 
+ * - right border, bottom border, and right-bottom corner if argument `reverse` is false
+ * - or left border, bottom border, and left-bottom corner if argument `reverse` is true
  * @param targetRef Input element to resize
+ * @param reverse Input flag to decide where to resize the element
  * @param minSize Input minimum size to resize.
  * @returns Return the following data.
  * - width: new width of the element after resized
@@ -11,17 +14,19 @@ import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
  */
 export function useResize(
   targetRef: Ref<HTMLElement | null>,
+  reverse: Ref<boolean> = ref(false),
   minSize: { width: number; height: number } = { width: 20, height: 40 }
 ) {
   const width = ref<number | null>(null)
   const height = ref<number | null>(null)
   const isResizing = ref(false)
+  let initialLeft = 0
   let initialWidth = 0
   let initialHeight = 0
   let startX = 0
   let startY = 0
   const resizeThreshold = 5 // Defines the area where resize can be triggered
-  const resizeDirection = ref<'right' | 'bottom' | 'corner' | null>(null) // Track the resize direction
+  const resizeDirection = ref<'left' | 'right' | 'bottom' | 'corner' | null>(null) // Track the resize direction
 
   const onMouseMove = (event: MouseEvent) => {
     if (!targetRef.value) return
@@ -32,14 +37,21 @@ export function useResize(
       const offsetY = event.clientY - rect.top
 
       // Check if the mouse is near the borders or the corner
+      const nearLeft = offsetX <= resizeThreshold
       const nearRight = offsetX >= rect.width - resizeThreshold
       const nearBottom = offsetY >= rect.height - resizeThreshold
 
       // Set the resize cursor based on the position
-      if (nearRight && nearBottom) {
-        targetRef.value.style.cursor = 'nwse-resize' // Change to bottom-right resize cursor
+      if (nearLeft && nearBottom && reverse.value) {
+        targetRef.value.style.cursor = 'nesw-resize' // Change to bottom-right resize cursor
         resizeDirection.value = 'corner'
-      } else if (nearRight) {
+      } if (nearRight && nearBottom && !reverse.value) {
+        targetRef.value.style.cursor = 'nwse-resize' // Change to bottom-left resize cursor
+        resizeDirection.value = 'corner'
+      } else if (nearLeft && reverse.value) {
+        targetRef.value.style.cursor = 'ew-resize' // Change to left-side resize cursor
+        resizeDirection.value = 'left'
+      } else if (nearRight && !reverse.value) {
         targetRef.value.style.cursor = 'ew-resize' // Change to right-side resize cursor
         resizeDirection.value = 'right'
       } else if (nearBottom) {
@@ -55,18 +67,26 @@ export function useResize(
       const deltaY = event.clientY - startY
 
       if (
+        resizeDirection.value === 'left' ||
+        resizeDirection.value === 'corner'
+      ) {
+        width.value = Math.max(minSize.width, initialWidth - deltaX)
+        targetRef.value.style.left = initialLeft + deltaX + 'px'
+        targetRef.value.style.width = width.value + 'px'
+      }
+      if (
         resizeDirection.value === 'right' ||
         resizeDirection.value === 'corner'
       ) {
         width.value = Math.max(minSize.width, initialWidth + deltaX)
-        targetRef.value.style.width = width.value+ 'px'
+        targetRef.value.style.width = width.value + 'px'
       }
       if (
         resizeDirection.value === 'bottom' ||
         resizeDirection.value === 'corner'
       ) {
         height.value = Math.max(minSize.height, initialHeight + deltaY)
-        targetRef.value.style.height = height.value+ 'px'
+        targetRef.value.style.height = height.value + 'px'
       }
     }
   }
@@ -77,8 +97,12 @@ export function useResize(
     const rect = targetRef.value.getBoundingClientRect()
     startX = event.clientX
     startY = event.clientY
+
     initialWidth = rect.width
     initialHeight = rect.height
+
+    const computedStyle = window.getComputedStyle(targetRef.value)
+    initialLeft = parseFloat(computedStyle.left)
 
     // Set width and height before resizing starts
     width.value = initialWidth

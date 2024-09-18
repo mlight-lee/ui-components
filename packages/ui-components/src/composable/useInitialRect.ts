@@ -6,12 +6,7 @@ import {
   watch
 } from 'vue'
 
-interface Rect {
-  left?: number | null
-  top?: number | null
-  width?: number | null
-  height?: number | null
-}
+import { Rect } from './rect'
 
 /**
  * Get initial size and position from CSS

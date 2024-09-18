@@ -1,7 +1,7 @@
 <template>
   <div
     ref="toolPaletteElement" 
-    :style="[movingStyle, resizedStyle]"
+    :style="[resizedStyle]"
     class="ml-tool-palette-dialog"
     v-if="visible"
   >
@@ -65,6 +65,14 @@ interface Props {
   pos?: { x: number, y: number} 
 }
 
+interface Events {
+  /**
+   * Trigger this event when closing the tool palette.
+   * @param pos The left and top position of the tool palette before closed
+   */
+  (e: 'close', pos: { x: number, y: number }): void
+}
+
 // Attributes of tool palette component
 const props = withDefaults(defineProps<Props>(), {
   title: '',
@@ -72,6 +80,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 // Flag to control whether the tool palette is visible
 const visible = defineModel({ default: true })
+const emit = defineEmits<Events>()
 
 // Width of the title bar
 const widthOfTitleBar = 20
@@ -84,10 +93,16 @@ const orientation = ref<TitleBarOrientation>('left')
 // Referernce to title bar HTML element of tool palette
 const titleBarElement = ref<HTMLElement | null>(null)
 // Reference to tool palette HTML element
-const toolPaletteElement = ref(null)
+const toolPaletteElement = ref<HTMLElement | null>(null)
 
 const { initialRect } = useInitialRect(toolPaletteElement)
-const { width: resizedWidth, height: resizedHeight } = useResize(toolPaletteElement)
+
+// Flag to reverse cllapse icon
+const reversed = computed(() => {
+  return orientation.value === 'right'
+})
+const { width: resizedWidth, height: resizedHeight } = useResize(toolPaletteElement, reversed)
+
 // Get current window size
 const { windowWidth } = useWindowSize()
 
@@ -104,17 +119,13 @@ const maxLeftOfToolPalette = computed(() => {
 const dragOptions = computed<DragOptions>(() => {
   return {
     min: 0,
-    max: maxLeftOfToolPalette.value
+    max: maxLeftOfToolPalette.value,
+    container: toolPaletteElement.value
   }
 })
 const { movement } = useDrag(titleBarElement, dragOptions)
 
 useTransition(toolPaletteElement)
-
-// Flag to reverse cllapse icon
-const reversed = computed(() => {
-  return orientation.value === 'right'
-})
 
 // Resized style
 const resizedStyle = computed(() => {
@@ -124,13 +135,6 @@ const resizedStyle = computed(() => {
     resizedHeight.value ? `${resizedHeight.value}px` : `${initialRect.value.height}px`
 
   return { width, height }
-})
-
-// Styles for moving
-const movingStyle = computed(() => {
-  return {
-    transform: `translate(${movement.value.x}px, ${movement.value.y}px)`
-  }
 })
 
 const handleCollapsed = (value: boolean) => {
@@ -143,11 +147,15 @@ const handleCollapsed = (value: boolean) => {
 
 const handleClose = () => {
   visible.value = false
+  const element = toolPaletteElement.value
+  emit('close', { 
+    x: element ? element.clientLeft : 0,
+    y: element ? element.clientTop : 0,
+  })
 }
 
-// Watch movement of tool palette to 
-// - Modify `docked` flag if the tool palette is on the left/right border of the window
-// - Modify `orientation` flag if 
+// Watch movement of tool palette to modify `docked` flag and `orientation` flag when the tool palette
+// is on the left/right border of the window
 watch(movement, newVal => {
   if (newVal && toolPaletteElement.value) {
     const element = toolPaletteElement.value as HTMLElement

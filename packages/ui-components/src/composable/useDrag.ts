@@ -20,6 +20,10 @@ export interface DragOptions {
    * The minimum distance from the left border of the element to the right border of the window
    */
   max: number
+  /**
+   * The container HTML element. Its left and top attributes will be modified when mouse is moving.
+   */
+  container: HTMLElement | null
 }
 
 /**
@@ -96,6 +100,14 @@ export function useDrag(
           0,
           Math.min(newY, viewportHeight - elementHeight - 1)
         )
+
+        // Update values of left and top attributes of container element
+        if (options?.value.container) {
+          const container = options?.value.container
+          // const rect = container.getBoundingClientRect()
+          container.style.left = position.value.x + 'px'
+          container.style.top = position.value.y + 'px'
+        }
         frameId = null // Reset for the next frame
       })
     }
@@ -134,6 +146,7 @@ export function useDrag(
   watch(targetRef, newVal => {
     if (newVal) {
       nextTick(() => {
+        setInitialPosition() // Set initial position from CSS
         addEventListeners()
       })
     } else {
