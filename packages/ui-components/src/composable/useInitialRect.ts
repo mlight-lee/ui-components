@@ -1,10 +1,4 @@
-import {
-  nextTick,
-  onMounted,
-  Ref,
-  ref,
-  watch
-} from 'vue'
+import { nextTick, onMounted, Ref, ref, watch } from 'vue'
 
 import { Rect } from './types'
 

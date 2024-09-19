@@ -1,9 +1,9 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
-import { Rect } from './types';
+import { Rect } from './types'
 
 /**
- * Resize the specified element when moving mouse to its 
+ * Resize the specified element when moving mouse to its
  * - right border, bottom border, and right-bottom corner if argument `reverse` is false
  * - or left border, bottom border, and left-bottom corner if argument `reverse` is true
  * @param targetRef Input element to resize
@@ -23,7 +23,7 @@ export function useResize(
     width: null,
     height: null,
     left: null,
-    top: null 
+    top: null
   })
   const isResizing = ref(false)
   const initialLeft = 0
@@ -32,7 +32,9 @@ export function useResize(
   let startX = 0
   let startY = 0
   const resizeThreshold = 5 // Defines the area where resize can be triggered
-  const resizeDirection = ref<'left' | 'right' | 'bottom' | 'corner' | null>(null) // Track the resize direction
+  const resizeDirection = ref<'left' | 'right' | 'bottom' | 'corner' | null>(
+    null
+  ) // Track the resize direction
 
   const onMouseMove = (event: MouseEvent) => {
     if (!targetRef.value) return
@@ -51,7 +53,8 @@ export function useResize(
       if (nearLeft && nearBottom && reverse.value) {
         targetRef.value.style.cursor = 'nesw-resize' // Change to bottom-right resize cursor
         resizeDirection.value = 'corner'
-      } if (nearRight && nearBottom && !reverse.value) {
+      }
+      if (nearRight && nearBottom && !reverse.value) {
         targetRef.value.style.cursor = 'nwse-resize' // Change to bottom-left resize cursor
         resizeDirection.value = 'corner'
       } else if (nearLeft && reverse.value) {
@@ -76,7 +79,10 @@ export function useResize(
         resizeDirection.value === 'left' ||
         resizeDirection.value === 'corner'
       ) {
-        resizedBoundingRect.value.width = Math.max(minSize.width, initialWidth - deltaX)
+        resizedBoundingRect.value.width = Math.max(
+          minSize.width,
+          initialWidth - deltaX
+        )
         resizedBoundingRect.value.left = initialLeft + deltaX
         targetRef.value.style.left = resizedBoundingRect.value.left + 'px'
         targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
@@ -85,14 +91,20 @@ export function useResize(
         resizeDirection.value === 'right' ||
         resizeDirection.value === 'corner'
       ) {
-        resizedBoundingRect.value.width = Math.max(minSize.width, initialWidth + deltaX)
+        resizedBoundingRect.value.width = Math.max(
+          minSize.width,
+          initialWidth + deltaX
+        )
         targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
       }
       if (
         resizeDirection.value === 'bottom' ||
         resizeDirection.value === 'corner'
       ) {
-        resizedBoundingRect.value.height = Math.max(minSize.height, initialHeight + deltaY)
+        resizedBoundingRect.value.height = Math.max(
+          minSize.height,
+          initialHeight + deltaY
+        )
         targetRef.value.style.height = resizedBoundingRect.value.height + 'px'
       }
     }

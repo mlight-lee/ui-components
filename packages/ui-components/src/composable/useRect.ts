@@ -1,8 +1,4 @@
-import {
-  computed,
-  Ref,
-  ref
-} from 'vue'
+import { computed, Ref, ref } from 'vue'
 
 import { Rect } from './types'
 import { useInitialRect } from './useInitialRect'

@@ -1,9 +1,4 @@
-import {
-  onBeforeUnmount,
-  onMounted,
-  Ref,
-  watch
-} from 'vue'
+import { onBeforeUnmount, onMounted, Ref, watch } from 'vue'
 
 /**
  * Clean transition style in the specified element after trainsition is done

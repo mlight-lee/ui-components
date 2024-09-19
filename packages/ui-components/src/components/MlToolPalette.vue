@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="toolPaletteElement" 
+    ref="toolPaletteElement"
     :style="[resizedStyle]"
     class="ml-tool-palette-dialog"
     v-if="visible"
@@ -40,9 +40,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
-import { Orientation, WIDTH_OF_TITLE_BAR } from '../composable/types'
+import { WIDTH_OF_TITLE_BAR } from '../composable/types'
 import { useBoundingRect } from '../composable/useBoundingRect'
 import { DragOptions } from '../composable/useDrag'
 import { useDragEx } from '../composable/useDragEx'
@@ -65,7 +65,7 @@ interface Events {
    * Trigger this event when closing the tool palette.
    * @param pos The left and top position of the tool palette before closed
    */
-  (e: 'close', pos: { x: number, y: number }): void
+  (e: 'close', pos: { x: number; y: number }): void
 }
 
 // Attributes of tool palette component
@@ -78,10 +78,6 @@ const emit = defineEmits<Events>()
 
 // Flag to indicate whether the tool palette is collapsed
 const collapsed = ref<boolean>(false)
-// Flag to indicate whether the tool palette is docked on the left/right border of the window
-const docked = ref<boolean>(false)
-// The orientation of the title bar. For now, 'left' and 'right' are supported.
-const orientation = ref<Orientation>('left')
 // Referernce to title bar HTML element of tool palette
 const titleBarElement = ref<HTMLElement | null>(null)
 // Reference to tool palette HTML element
@@ -97,7 +93,9 @@ const { windowWidth } = useWindowSize()
 
 // Maximum left position of right border of the tool palette
 const maxLeftOfToolPalette = computed(() => {
-  return windowWidth.value - (toolPaletteRect.value.width || 0) - WIDTH_OF_TITLE_BAR
+  return (
+    windowWidth.value - (toolPaletteRect.value.width || 0) - WIDTH_OF_TITLE_BAR
+  )
 })
 const dragOptions = computed<DragOptions>(() => {
   return {
@@ -106,11 +104,14 @@ const dragOptions = computed<DragOptions>(() => {
     container: toolPaletteElement.value
   }
 })
-const { movement } = useDragEx(titleBarElement, dragOptions)
+const { docked, orientation, movement } = useDragEx(
+  titleBarElement,
+  dragOptions
+)
 const { rect: toolPaletteRect } = useBoundingRect(
-  toolPaletteElement, 
-  reversed, 
-  collapsed, 
+  toolPaletteElement,
+  reversed,
+  collapsed,
   movement
 )
 
@@ -121,8 +122,8 @@ const resizedStyle = computed(() => {
   return {
     left: `${toolPaletteRect.value.left}px`,
     top: `${toolPaletteRect.value.top}px`,
-    width: `${toolPaletteRect.value.width}px`, 
-    height: docked.value ? '100%' : `${toolPaletteRect.value.height}px` 
+    width: `${toolPaletteRect.value.width}px`,
+    height: docked.value ? '100%' : `${toolPaletteRect.value.height}px`
   }
 })
 
@@ -137,29 +138,11 @@ const handleCollapsed = (value: boolean) => {
 const handleClose = () => {
   visible.value = false
   const element = toolPaletteElement.value
-  emit('close', { 
+  emit('close', {
     x: element ? element.clientLeft : 0,
-    y: element ? element.clientTop : 0,
+    y: element ? element.clientTop : 0
   })
 }
-
-// Watch movement of tool palette to modify `docked` flag and `orientation` flag when the tool palette
-// is on the left/right border of the window
-watch(movement, newVal => {
-  if (newVal && toolPaletteElement.value) {
-    const element = toolPaletteElement.value as HTMLElement
-    const rect = element.getBoundingClientRect()
-    if (rect.left <= dragOptions.value.min) {
-      orientation.value = 'left'
-      docked.value = true
-    } else if (rect.left >= dragOptions.value.max) {
-      orientation.value = 'right'
-      docked.value = true
-    } else {
-      docked.value = false
-    }
-  }
-})
 </script>
 
 <style scoped>

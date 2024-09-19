@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted,ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 /**
  * Get window size

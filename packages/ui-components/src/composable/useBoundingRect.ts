@@ -1,8 +1,4 @@
-import {
-  computed,
-  Ref,
-  watch
-} from 'vue'
+import { computed, Ref, watch } from 'vue'
 
 import { Position, WIDTH_OF_TITLE_BAR } from './types'
 import { useInitialRect } from './useInitialRect'
@@ -28,7 +24,9 @@ export function useBoundingRect(
   const { rect: resizedRect } = useResize(targetRef, reversed)
 
   const rect = computed(() => {
-    return (resizedRect.value.width && resizedRect.value.height) ? resizedRect.value : initialRect.value
+    return resizedRect.value.width && resizedRect.value.height
+      ? resizedRect.value
+      : initialRect.value
   })
 
   // Watch collapsed state. If it is collapsed, store the old width in order to reuse it when expanding the tool palette

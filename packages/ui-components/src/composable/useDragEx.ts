@@ -1,7 +1,7 @@
 import { Ref, ref, watch } from 'vue'
 
-import { Orientation } from './types';
-import { DragOptions, useDrag } from './useDrag';
+import { Orientation } from './types'
+import { DragOptions, useDrag } from './useDrag'
 
 /**
  * One extension to `useDrag` to support docking and orientation
