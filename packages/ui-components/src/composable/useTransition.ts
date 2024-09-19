@@ -1,10 +1,16 @@
 import { onBeforeUnmount, onMounted, Ref, watch } from 'vue'
 
 /**
- * Clean transition style in the specified element after trainsition is done
- * @param targetRef Input element to clean its transition style
+ * Add and clean transition style for the specified element
+ * @param targetRef Input element to add and clean transition style
+ * @param reversed Input flag whether to reverse cllapse icon
+ * @param collapsed Input flag to indicate whether the element is collapsed
  */
-export function useTransition(targetRef: Ref<HTMLElement | null>) {
+export function useTransition(
+  targetRef: Ref<HTMLElement | null>,
+  reversed: Ref<boolean>,
+  collapsed: Ref<boolean>,
+) {
   // Clean transition logic
   function cleanTransition() {
     if (targetRef.value) {
@@ -44,6 +50,18 @@ export function useTransition(targetRef: Ref<HTMLElement | null>) {
       setupListeners()
     } else {
       cleanupListeners()
+    }
+  })
+
+  // Add transition style
+  watch(collapsed, () => {
+    if (targetRef.value) {
+      const element = targetRef.value as HTMLElement
+      if (reversed.value) {
+        element.style.transition = 'width 0.3s ease-out, left 0.3s ease-out'
+      } else {
+        element.style.transition = 'width 0.3s ease'
+      }
     }
   })
 }

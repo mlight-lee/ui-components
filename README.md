@@ -6,7 +6,59 @@ This is one common UI component library based on Element Plus.
 
 The following components are included in this package.
 
+- Tool Palette: one dockable, resizable, and floating window, which is quite similar to AutoCAD Tool Palette.
 - Toolbar: one toolbar which can be easily customized by one array of button data. 
+
+### Tool Palette
+
+AutoCAD uses [tool palettes](https://help.autodesk.com/view/ACD/2025/ENU/?guid=GUID-167A8594-92CB-4FCC-B72C-0F546383E97C) to organize blocks, hatches, and custom tools in a tabbed window. Tool Palette component is quite similar to one in AutoCAD. It supports the following features.
+
+- Dockable: dock to the left or right side of the window
+- Folderable: roll open or closed as your need
+- Auto-hide: roll open and closed as the cursor moves across it. When this option is cleared, the full tool palette stays open continuously.
+
+<img src="./doc/palette.jpg" width="400" height="92" alt="Tool Palette Example">
+
+You can customize tool palette by the following properties. More properties will be coming soon.
+
+```javascript
+/**
+ * Properties of MlToolPalette component
+ */
+interface Props {
+  /**
+   * The title of tool palette dialog
+   */
+  title?: string
+}
+```
+
+It is quite easy to use it.
+
+```javascript
+<script lang="ts" setup>
+import { MlToolPalette } from '@mlightcad/ui-components'
+const toolPaletteVisible = ref<boolean>(false)
+</script>
+
+<template>
+  <ml-tool-palette
+    class="tool-palette"
+    v-model="toolPaletteVisible"
+    title="Tool Palette Test"
+  >
+    <span>Tool Palette Test</span>
+  </ml-tool-palette>
+</template>
+
+<style scoped>
+.tool-palette {
+  position: fixed;
+  top: 55px;
+  width: 400px;
+}
+</style>
+```
 
 ### Toolbar
 

@@ -1,6 +1,6 @@
 import { Ref, ref, watch } from 'vue'
 
-import { Orientation } from './types'
+import { Orientation, WIDTH_OF_TITLE_BAR } from './types'
 import { DragOptions, useDrag } from './useDrag'
 
 /**
@@ -20,7 +20,6 @@ export function useDragEx(
 ) {
   const docked = ref<boolean>(false)
   const orientation = ref<Orientation>('left')
-
   const { isDragging, movement, position } = useDrag(targetRef, options)
 
   // Watch movement of tool palette to modify `docked` flag and `orientation` flag when the tool palette
@@ -29,10 +28,10 @@ export function useDragEx(
     if (newVal && options.value.container) {
       const element = options.value.container as HTMLElement
       const rect = element.getBoundingClientRect()
-      if (rect.left <= options.value.min) {
+      if (rect.left <= options.value.leftGap) {
         orientation.value = 'left'
         docked.value = true
-      } else if (rect.left >= options.value.max) {
+      } else if ((window.innerWidth - rect.left - rect.width - WIDTH_OF_TITLE_BAR) <= options.value.rightGap) {
         orientation.value = 'right'
         docked.value = true
       } else {
