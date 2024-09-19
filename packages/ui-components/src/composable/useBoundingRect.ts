@@ -1,4 +1,4 @@
-import { computed, Ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
 import { Position, WIDTH_OF_TITLE_BAR } from './types'
 import { useInitialRect } from './useInitialRect'
@@ -20,6 +20,8 @@ export function useBoundingRect(
   collapsed: Ref<boolean>,
   movement: Ref<Position>
 ) {
+  const windowWidth = ref(window.innerWidth)
+  const windowHeight = ref(window.innerHeight)  
   const { initialRect } = useInitialRect(targetRef)
   const { rect: resizedRect } = useResize(targetRef, reversed)
 
@@ -27,6 +29,29 @@ export function useBoundingRect(
     return resizedRect.value.width && resizedRect.value.height
       ? resizedRect.value
       : initialRect.value
+  })
+
+  // Modify the position of this tool palette according to current orientation
+  const setTargetPos = (xDelta: number) => {
+    if (targetRef.value && reversed.value) {
+      const rect = targetRef.value.getBoundingClientRect()
+      targetRef.value.style.left = (rect.left + xDelta) + 'px'
+    }
+  }
+
+  const updateWindowSize = () => {
+    const xDelta = window.innerWidth - windowWidth.value
+    windowWidth.value = window.innerWidth
+    windowHeight.value = window.innerHeight
+    setTargetPos(xDelta)
+  }
+
+  onMounted(() => {
+    window.addEventListener('resize', updateWindowSize)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', updateWindowSize)
   })
 
   // Watch collapsed state. If it is collapsed, store the old width in order to reuse it when expanding the tool palette

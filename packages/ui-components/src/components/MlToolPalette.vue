@@ -42,12 +42,10 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import { WIDTH_OF_TITLE_BAR } from '../composable/types'
 import { useBoundingRect } from '../composable/useBoundingRect'
 import { DragOptions } from '../composable/useDrag'
 import { useDragEx } from '../composable/useDragEx'
 import { useTransition } from '../composable/useTransition'
-import { useWindowSize } from '../composable/useWindowSize'
 import MlCollapse from './MlCollapse.vue'
 
 /**
@@ -88,19 +86,10 @@ const reversed = computed(() => {
   return orientation.value === 'right'
 })
 
-// Get current window size
-const { windowWidth } = useWindowSize()
-
-// Maximum left position of right border of the tool palette
-const maxLeftOfToolPalette = computed(() => {
-  return (
-    windowWidth.value - (toolPaletteRect.value.width || 0) - WIDTH_OF_TITLE_BAR
-  )
-})
 const dragOptions = computed<DragOptions>(() => {
   return {
-    min: 0,
-    max: maxLeftOfToolPalette.value,
+    leftGap: 0,
+    rightGap: 0,
     container: toolPaletteElement.value
   }
 })
@@ -114,7 +103,6 @@ const { rect: toolPaletteRect } = useBoundingRect(
   collapsed,
   movement
 )
-
 useTransition(toolPaletteElement)
 
 // Resized style
