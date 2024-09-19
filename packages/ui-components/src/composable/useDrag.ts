@@ -8,10 +8,42 @@ import {
   watch
 } from 'vue'
 
-export function useDrag(targetRef: Ref<HTMLElement | null>) {
+import { Position } from './types'
+
+/**
+ * Options to use `useDrag`
+ */
+export interface DragOptions {
+  /**
+   * The minimum distance from the left border of the element to the left border of the window
+   */
+  min: number
+  /**
+   * The minimum distance from the left border of the element to the right border of the window
+   */
+  max: number
+  /**
+   * The container HTML element. Its left and top attributes will be modified when mouse is moving.
+   */
+  container: HTMLElement | null
+}
+
+/**
+ * Drag `targetRef` element to move it
+ * @param targetRef Input element to drag
+ * @param options Input dragging options to customize dragging behaviors
+ * @returns Return thefollowing data
+ * - isDragging: flag to indicate whether the element is in dragging state
+ * - movement: movement based on the original position of the element
+ * - position: new left and top position of the element after dragged
+ */
+export function useDrag(
+  targetRef: Ref<HTMLElement | null>,
+  options?: Ref<DragOptions>
+) {
   const isDragging = ref(false)
-  const position = ref({ x: 0, y: 0 })
-  const initialPosition = ref({ x: 0, y: 0 }) // Initial CSS position
+  const position = ref<Position>({ x: 0, y: 0 })
+  const initialPosition = ref<Position>({ x: 0, y: 0 }) // Initial CSS position
   const movement = computed(() => {
     return {
       x: position.value.x - initialPosition.value.x,
@@ -61,13 +93,25 @@ export function useDrag(targetRef: Ref<HTMLElement | null>) {
         const newY = position.value.y + e.movementY
 
         position.value.x = Math.max(
-          0,
+          options ? options.value.min : 0,
           Math.min(newX, viewportWidth - elementWidth - 1)
+        )
+        position.value.x = Math.min(
+          options ? options.value.max : 0,
+          position.value.x
         )
         position.value.y = Math.max(
           0,
           Math.min(newY, viewportHeight - elementHeight - 1)
         )
+
+        // Update values of left and top attributes of container element
+        if (options?.value.container) {
+          const container = options?.value.container
+          // const rect = container.getBoundingClientRect()
+          container.style.left = position.value.x + 'px'
+          container.style.top = position.value.y + 'px'
+        }
         frameId = null // Reset for the next frame
       })
     }
@@ -106,6 +150,7 @@ export function useDrag(targetRef: Ref<HTMLElement | null>) {
   watch(targetRef, newVal => {
     if (newVal) {
       nextTick(() => {
+        setInitialPosition() // Set initial position from CSS
         addEventListeners()
       })
     } else {
@@ -115,6 +160,7 @@ export function useDrag(targetRef: Ref<HTMLElement | null>) {
 
   return {
     isDragging,
-    movement
+    movement,
+    position
   }
 }
