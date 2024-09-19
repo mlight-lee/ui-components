@@ -17,7 +17,7 @@ AutoCAD uses [tool palettes](https://help.autodesk.com/view/ACD/2025/ENU/?guid=G
 - Folderable: roll open or closed as your need
 - Auto-hide: roll open and closed as the cursor moves across it. When this option is cleared, the full tool palette stays open continuously.
 
-<img src="./doc/palette.jpg" width="400" height="92" alt="Tool Palette Example">
+<img src="./doc/palette.jpg" alt="Tool Palette Example">
 
 You can customize tool palette by the following properties. More properties will be coming soon.
 
