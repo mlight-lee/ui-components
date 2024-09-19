@@ -42,12 +42,13 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
+import { Orientation, WIDTH_OF_TITLE_BAR } from '../composable/types'
 import { useBoundingRect } from '../composable/useBoundingRect'
-import { DragOptions, useDrag } from '../composable/useDrag'
+import { DragOptions } from '../composable/useDrag'
+import { useDragEx } from '../composable/useDragEx'
 import { useTransition } from '../composable/useTransition'
 import { useWindowSize } from '../composable/useWindowSize'
 import MlCollapse from './MlCollapse.vue'
-import { Orientation } from '../composable/rect'
 
 /**
  * Properties of MlToolPalette component
@@ -96,7 +97,7 @@ const { windowWidth } = useWindowSize()
 
 // Maximum left position of right border of the tool palette
 const maxLeftOfToolPalette = computed(() => {
-  return windowWidth.value - (toolPaletteRect.value.width || 0)
+  return windowWidth.value - (toolPaletteRect.value.width || 0) - WIDTH_OF_TITLE_BAR
 })
 const dragOptions = computed<DragOptions>(() => {
   return {
@@ -105,7 +106,7 @@ const dragOptions = computed<DragOptions>(() => {
     container: toolPaletteElement.value
   }
 })
-const { movement } = useDrag(titleBarElement, dragOptions)
+const { movement } = useDragEx(titleBarElement, dragOptions)
 const { rect: toolPaletteRect } = useBoundingRect(
   toolPaletteElement, 
   reversed, 

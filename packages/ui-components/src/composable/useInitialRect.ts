@@ -6,7 +6,7 @@ import {
   watch
 } from 'vue'
 
-import { Rect } from './rect'
+import { Rect } from './types'
 
 /**
  * Get initial size and position from CSS

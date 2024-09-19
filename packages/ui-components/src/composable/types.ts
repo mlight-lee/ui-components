@@ -11,3 +11,6 @@ export interface Position {
 }
 
 export type Orientation = 'left' | 'right'
+
+// Width of the title bar of the tool palette
+export const WIDTH_OF_TITLE_BAR = 20

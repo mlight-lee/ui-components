@@ -4,12 +4,9 @@ import {
   watch
 } from 'vue'
 
-import { Position } from './rect'
+import { Position, WIDTH_OF_TITLE_BAR } from './types'
 import { useInitialRect } from './useInitialRect'
 import { useResize } from './useResize'
-
-// Width of the title bar of the tool palette
-export const WIDTH_OF_TITLE_BAR = 20
 
 /**
  * Get the bounding rect of the tool palette.

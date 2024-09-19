@@ -8,7 +8,7 @@ import {
   watch
 } from 'vue'
 
-import { Position } from './rect'
+import { Position } from './types'
 
 /**
  * Options to use `useDrag`
@@ -31,9 +31,11 @@ export interface DragOptions {
 /**
  * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
+ * @param options Input dragging options to customize dragging behaviors
  * @returns Return thefollowing data
  * - isDragging: flag to indicate whether the element is in dragging state
  * - movement: movement based on the original position of the element
+ * - position: new left and top position of the element after dragged
  */
 export function useDrag(
   targetRef: Ref<HTMLElement | null>,

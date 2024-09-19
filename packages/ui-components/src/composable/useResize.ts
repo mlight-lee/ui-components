@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
-import { Rect } from './rect';
+import { Rect } from './types';
 
 /**
  * Resize the specified element when moving mouse to its 
