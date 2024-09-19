@@ -26,13 +26,13 @@ export function useResize(
     top: null
   })
   const isResizing = ref(false)
-  const initialLeft = 0
+  let initialLeft = 0
   let initialWidth = 0
   let initialHeight = 0
   let startX = 0
   let startY = 0
   const resizeThreshold = 5 // Defines the area where resize can be triggered
-  const resizeDirection = ref<'left' | 'right' | 'bottom' | 'corner' | null>(
+  const resizeDirection = ref<'left' | 'right' | 'bottom' | 'right-bottom-corner' | 'left-bottom-corner' | null>(
     null
   ) // Track the resize direction
 
@@ -52,11 +52,10 @@ export function useResize(
       // Set the resize cursor based on the position
       if (nearLeft && nearBottom && reverse.value) {
         targetRef.value.style.cursor = 'nesw-resize' // Change to bottom-right resize cursor
-        resizeDirection.value = 'corner'
-      }
-      if (nearRight && nearBottom && !reverse.value) {
+        resizeDirection.value = 'left-bottom-corner'
+      } else if (nearRight && nearBottom && !reverse.value) {
         targetRef.value.style.cursor = 'nwse-resize' // Change to bottom-left resize cursor
-        resizeDirection.value = 'corner'
+        resizeDirection.value = 'right-bottom-corner'
       } else if (nearLeft && reverse.value) {
         targetRef.value.style.cursor = 'ew-resize' // Change to left-side resize cursor
         resizeDirection.value = 'left'
@@ -77,7 +76,7 @@ export function useResize(
 
       if (
         resizeDirection.value === 'left' ||
-        resizeDirection.value === 'corner'
+        resizeDirection.value === 'left-bottom-corner'
       ) {
         resizedBoundingRect.value.width = Math.max(
           minSize.width,
@@ -89,7 +88,7 @@ export function useResize(
       }
       if (
         resizeDirection.value === 'right' ||
-        resizeDirection.value === 'corner'
+        resizeDirection.value === 'right-bottom-corner'
       ) {
         resizedBoundingRect.value.width = Math.max(
           minSize.width,
@@ -99,7 +98,8 @@ export function useResize(
       }
       if (
         resizeDirection.value === 'bottom' ||
-        resizeDirection.value === 'corner'
+        resizeDirection.value === 'left-bottom-corner' ||
+        resizeDirection.value === 'right-bottom-corner'
       ) {
         resizedBoundingRect.value.height = Math.max(
           minSize.height,
@@ -119,6 +119,7 @@ export function useResize(
 
     initialWidth = rect.width
     initialHeight = rect.height
+    initialLeft = rect.left
 
     // Set width and height before resizing starts
     resizedBoundingRect.value.width = initialWidth
