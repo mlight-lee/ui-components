@@ -59,5 +59,6 @@ const handleToolPalette = () => {
   position: fixed;
   top: 55px;
   width: 400px;
+  height: 500px;
 }
 </style>

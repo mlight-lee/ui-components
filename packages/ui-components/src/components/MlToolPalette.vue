@@ -98,6 +98,7 @@ const { docked, orientation, movement } = useDragEx(
 )
 const { rect: toolPaletteRect } = useBoundingRect(
   toolPaletteElement,
+  titleBarElement,
   reversed,
   collapsed,
   movement
