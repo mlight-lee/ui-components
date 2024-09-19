@@ -45,7 +45,6 @@ import { computed, ref } from 'vue'
 import { useBoundingRect } from '../composable/useBoundingRect'
 import { DragOptions } from '../composable/useDrag'
 import { useDragEx } from '../composable/useDragEx'
-import { useTransition } from '../composable/useTransition'
 import MlCollapse from './MlCollapse.vue'
 
 /**
@@ -103,7 +102,6 @@ const { rect: toolPaletteRect } = useBoundingRect(
   collapsed,
   movement
 )
-useTransition(toolPaletteElement)
 
 // Resized style
 const resizedStyle = computed(() => {
@@ -117,10 +115,6 @@ const resizedStyle = computed(() => {
 
 const handleCollapsed = (value: boolean) => {
   collapsed.value = value
-  if (toolPaletteElement.value) {
-    const element = toolPaletteElement.value as HTMLElement
-    element.style.transition = 'width 0.3s ease'
-  }
 }
 
 const handleClose = () => {

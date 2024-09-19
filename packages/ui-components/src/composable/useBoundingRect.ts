@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 import { Position, WIDTH_OF_TITLE_BAR } from './types'
 import { useInitialRect } from './useInitialRect'
 import { useResize } from './useResize'
+import { useTransition } from './useTransition'
 
 /**
  * Get the bounding rect of the tool palette.
@@ -24,7 +25,8 @@ export function useBoundingRect(
   const windowHeight = ref(window.innerHeight)  
   const { initialRect } = useInitialRect(targetRef)
   const { rect: resizedRect } = useResize(targetRef, reversed)
-
+  useTransition(targetRef, reversed, collapsed)
+  
   const rect = computed(() => {
     return resizedRect.value.width && resizedRect.value.height
       ? resizedRect.value
@@ -60,8 +62,14 @@ export function useBoundingRect(
     if (newVal) {
       oldWidth = rect.value.width
       rect.value.width = WIDTH_OF_TITLE_BAR
+      if (reversed.value && rect.value.left && oldWidth) {
+        rect.value.left = rect.value.left + oldWidth - WIDTH_OF_TITLE_BAR
+      }
     } else {
       rect.value.width = oldWidth
+      if (reversed.value && rect.value.left && oldWidth) {
+        rect.value.left = rect.value.left - oldWidth + WIDTH_OF_TITLE_BAR
+      }
       oldWidth = null
     }
   })
