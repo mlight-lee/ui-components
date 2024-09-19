@@ -20,7 +20,7 @@ export function useTransition(
       } else {
         element.style.transition = 'width 0.3s ease'
       }
-    }    
+    }
   }
 
   const cleanTransition = () => {

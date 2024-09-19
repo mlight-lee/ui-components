@@ -25,12 +25,12 @@ export function useBoundingRect(
   movement: Ref<Position>
 ) {
   const windowWidth = ref(window.innerWidth)
-  const windowHeight = ref(window.innerHeight)  
+  const windowHeight = ref(window.innerHeight)
   const { initialRect } = useInitialRect(toolPaletteRef)
-  const { rect: resizedRect } = useResize(toolPaletteRef, reversed)
+  const { rect: resizedRect } = useResize(toolPaletteRef, collapsed, reversed)
   const { autoOpened } = useAutoOpen(toolPaletteRef, titleBarRef, collapsed)
   useTransition(toolPaletteRef, reversed, collapsed, autoOpened)
-  
+
   const rect = computed(() => {
     return resizedRect.value.width && resizedRect.value.height
       ? resizedRect.value
@@ -41,7 +41,7 @@ export function useBoundingRect(
   const setTargetPos = (xDelta: number) => {
     if (toolPaletteRef.value && reversed.value) {
       const rect = toolPaletteRef.value.getBoundingClientRect()
-      toolPaletteRef.value.style.left = (rect.left + xDelta) + 'px'
+      toolPaletteRef.value.style.left = rect.left + xDelta + 'px'
     }
   }
 
@@ -82,7 +82,7 @@ export function useBoundingRect(
     collapse(newVal, true)
   })
 
-  watch(autoOpened, (newVal) => {
+  watch(autoOpened, newVal => {
     // `autoOpened` takes effect only if `collapsed` is true.
     if (collapsed.value) {
       collapse(!newVal, false)

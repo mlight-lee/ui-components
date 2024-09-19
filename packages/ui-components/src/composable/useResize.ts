@@ -8,6 +8,8 @@ import { Rect } from './types'
  * - or left border, bottom border, and left-bottom corner if argument `reverse` is true
  * @param targetRef Input element to resize
  * @param reverse Input flag to decide where to resize the element
+ * @param collapsed Input flag to indicate whether the tool palette is collapsed. If `collapsed` is true,
+ * the element can't be resized
  * @param minSize Input minimum size to resize.
  * @returns Return the following data.
  * - width: new width of the element after resized
@@ -16,6 +18,7 @@ import { Rect } from './types'
  */
 export function useResize(
   targetRef: Ref<HTMLElement | null>,
+  collapsed: Ref<boolean> = ref(false),
   reverse: Ref<boolean> = ref(false),
   minSize: { width: number; height: number } = { width: 20, height: 40 }
 ) {
@@ -32,12 +35,17 @@ export function useResize(
   let startX = 0
   let startY = 0
   const resizeThreshold = 5 // Defines the area where resize can be triggered
-  const resizeDirection = ref<'left' | 'right' | 'bottom' | 'right-bottom-corner' | 'left-bottom-corner' | null>(
-    null
-  ) // Track the resize direction
+  const resizeDirection = ref<
+    | 'left'
+    | 'right'
+    | 'bottom'
+    | 'right-bottom-corner'
+    | 'left-bottom-corner'
+    | null
+  >(null) // Track the resize direction
 
   const onMouseMove = (event: MouseEvent) => {
-    if (!targetRef.value) return
+    if (!targetRef.value || collapsed.value) return
 
     if (!isResizing.value) {
       const rect = targetRef.value.getBoundingClientRect()
@@ -78,34 +86,34 @@ export function useResize(
         resizeDirection.value === 'left' ||
         resizeDirection.value === 'left-bottom-corner'
       ) {
-        resizedBoundingRect.value.width = Math.max(
-          minSize.width,
-          initialWidth - deltaX
-        )
-        resizedBoundingRect.value.left = initialLeft + deltaX
-        targetRef.value.style.left = resizedBoundingRect.value.left + 'px'
-        targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
+        const newWidth = initialWidth - deltaX
+        if (newWidth > minSize.width) {
+          resizedBoundingRect.value.width = newWidth
+          resizedBoundingRect.value.left = initialLeft + deltaX
+          targetRef.value.style.left = resizedBoundingRect.value.left + 'px'
+          targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
+        }
       }
       if (
         resizeDirection.value === 'right' ||
         resizeDirection.value === 'right-bottom-corner'
       ) {
-        resizedBoundingRect.value.width = Math.max(
-          minSize.width,
-          initialWidth + deltaX
-        )
-        targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
+        const newWidth = initialWidth + deltaX
+        if (newWidth > minSize.width) {
+          resizedBoundingRect.value.width = newWidth
+          targetRef.value.style.width = resizedBoundingRect.value.width + 'px'
+        }
       }
       if (
         resizeDirection.value === 'bottom' ||
         resizeDirection.value === 'left-bottom-corner' ||
         resizeDirection.value === 'right-bottom-corner'
       ) {
-        resizedBoundingRect.value.height = Math.max(
-          minSize.height,
-          initialHeight + deltaY
-        )
-        targetRef.value.style.height = resizedBoundingRect.value.height + 'px'
+        const newHeight = initialHeight + deltaY
+        if (newHeight > minSize.height) {
+          resizedBoundingRect.value.height = newHeight
+          targetRef.value.style.height = resizedBoundingRect.value.height + 'px'
+        }
       }
     }
   }

@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, Ref, ref,watch } from 'vue'
+import { onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
 /**
  * Roll open and closed when the mouse moves across the tool palette. It takes effect only if `collapsed` is true.
@@ -11,7 +11,7 @@ export function useAutoOpen(
   titleBarRef: Ref<HTMLElement | null>,
   collapsed: Ref<boolean>
 ) {
-  // Flag to indicate whether the tool palette is opened automatically. 
+  // Flag to indicate whether the tool palette is opened automatically.
   // It is valid only if `collapsed` is true.
   const autoOpened = ref(false)
 
@@ -19,10 +19,10 @@ export function useAutoOpen(
     if (collapsed.value && toolPaletteRef.value) {
       const rect = toolPaletteRef.value.getBoundingClientRect()
       const isOutside =
-          e.clientX < rect.left ||
-          e.clientX > rect.right ||
-          e.clientY < rect.top ||
-          e.clientY > rect.bottom
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
       autoOpened.value = !isOutside
     }
   }

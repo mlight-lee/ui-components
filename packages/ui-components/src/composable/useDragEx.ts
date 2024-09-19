@@ -31,7 +31,10 @@ export function useDragEx(
       if (rect.left <= options.value.leftGap) {
         orientation.value = 'left'
         docked.value = true
-      } else if ((window.innerWidth - rect.left - rect.width - WIDTH_OF_TITLE_BAR) <= options.value.rightGap) {
+      } else if (
+        window.innerWidth - rect.left - rect.width - WIDTH_OF_TITLE_BAR <=
+        options.value.rightGap
+      ) {
         orientation.value = 'right'
         docked.value = true
       } else {

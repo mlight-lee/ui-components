@@ -42,6 +42,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
+import { WIDTH_OF_TITLE_BAR } from '../composable/types'
 import { useBoundingRect } from '../composable/useBoundingRect'
 import { DragOptions } from '../composable/useDrag'
 import { useDragEx } from '../composable/useDragEx'
@@ -73,6 +74,9 @@ const props = withDefaults(defineProps<Props>(), {
 const visible = defineModel({ default: true })
 const emit = defineEmits<Events>()
 
+// This varible is used in CSS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const collapsedWidth = WIDTH_OF_TITLE_BAR
 // Flag to indicate whether the tool palette is collapsed
 const collapsed = ref<boolean>(false)
 // Referernce to title bar HTML element of tool palette
@@ -133,7 +137,7 @@ const handleClose = () => {
   cursor: default;
   width: 300px;
   min-width: var(--collapsed-width);
-  position: absolute;
+  position: fixed;
   border: 1px solid;
   border-radius: 4px;
 }

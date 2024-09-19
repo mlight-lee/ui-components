@@ -81,37 +81,43 @@ export function useDrag(
 
   const onMouseMove = (e: MouseEvent) => {
     if (isDragging.value) {
-        const viewportWidth = window.innerWidth
-        const viewportHeight = window.innerHeight
-        const element = targetRef.value as HTMLElement
-        const elementWidth = element.offsetWidth
-        const elementHeight = element.offsetHeight
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+      const element = targetRef.value as HTMLElement
+      const elementWidth = element.offsetWidth
+      const elementHeight = element.offsetHeight
 
-        const newX = position.value.x + e.movementX
-        const newY = position.value.y + e.movementY
+      const newX = position.value.x + e.movementX
+      const newY = position.value.y + e.movementY
 
-        position.value.x = Math.max(
-          options ? options.value.leftGap : 0,
-          Math.min(newX, viewportWidth - elementWidth)
-        )
-        const containerWidth = options && options.value.container ? options.value.container.clientWidth : 0
-        const distanceToRightBorder = viewportWidth - containerWidth - elementWidth
-        position.value.x = Math.min(
-          options ? (distanceToRightBorder - options.value.rightGap) : distanceToRightBorder,
-          position.value.x
-        )
-        position.value.y = Math.max(
-          0,
-          Math.min(newY, viewportHeight - elementHeight)
-        )
+      position.value.x = Math.max(
+        options ? options.value.leftGap : 0,
+        Math.min(newX, viewportWidth - elementWidth)
+      )
+      const containerWidth =
+        options && options.value.container
+          ? options.value.container.clientWidth
+          : 0
+      const distanceToRightBorder =
+        viewportWidth - containerWidth - elementWidth
+      position.value.x = Math.min(
+        options
+          ? distanceToRightBorder - options.value.rightGap
+          : distanceToRightBorder,
+        position.value.x
+      )
+      position.value.y = Math.max(
+        0,
+        Math.min(newY, viewportHeight - elementHeight)
+      )
 
-        // Update values of left and top attributes of container element
-        if (options?.value.container) {
-          const container = options?.value.container
-          // const rect = container.getBoundingClientRect()
-          container.style.left = position.value.x + 'px'
-          container.style.top = position.value.y + 'px'
-        }
+      // Update values of left and top attributes of container element
+      if (options?.value.container) {
+        const container = options?.value.container
+        // const rect = container.getBoundingClientRect()
+        container.style.left = position.value.x + 'px'
+        container.style.top = position.value.y + 'px'
+      }
     }
   }
 
