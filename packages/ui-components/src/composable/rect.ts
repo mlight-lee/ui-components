@@ -9,3 +9,5 @@ export interface Position {
   x: number
   y: number
 }
+
+export type Orientation = 'left' | 'right'

@@ -47,9 +47,7 @@ import { DragOptions, useDrag } from '../composable/useDrag'
 import { useTransition } from '../composable/useTransition'
 import { useWindowSize } from '../composable/useWindowSize'
 import MlCollapse from './MlCollapse.vue'
-
-
-type TitleBarOrientation = 'left' | 'right'
+import { Orientation } from '../composable/rect'
 
 /**
  * Properties of MlToolPalette component
@@ -59,10 +57,6 @@ interface Props {
    * The title of tool palette dialog
    */
   title?: string
-  /**
-   * The initial position of the tool palette.
-   */
-  pos?: { x: number, y: number} 
 }
 
 interface Events {
@@ -75,8 +69,7 @@ interface Events {
 
 // Attributes of tool palette component
 const props = withDefaults(defineProps<Props>(), {
-  title: '',
-  orientation: 'left'
+  title: ''
 })
 // Flag to control whether the tool palette is visible
 const visible = defineModel({ default: true })
@@ -87,7 +80,7 @@ const collapsed = ref<boolean>(false)
 // Flag to indicate whether the tool palette is docked on the left/right border of the window
 const docked = ref<boolean>(false)
 // The orientation of the title bar. For now, 'left' and 'right' are supported.
-const orientation = ref<TitleBarOrientation>('left')
+const orientation = ref<Orientation>('left')
 // Referernce to title bar HTML element of tool palette
 const titleBarElement = ref<HTMLElement | null>(null)
 // Reference to tool palette HTML element
@@ -113,7 +106,12 @@ const dragOptions = computed<DragOptions>(() => {
   }
 })
 const { movement } = useDrag(titleBarElement, dragOptions)
-const { rect: toolPaletteRect } = useBoundingRect(toolPaletteElement, reversed, collapsed, movement)
+const { rect: toolPaletteRect } = useBoundingRect(
+  toolPaletteElement, 
+  reversed, 
+  collapsed, 
+  movement
+)
 
 useTransition(toolPaletteElement)
 
