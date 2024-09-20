@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
-import { Rect } from './types'
+import { useInitialRect } from './useInitialRect';
 
 /**
  * Resize the specified element when moving mouse to its
@@ -22,12 +22,7 @@ export function useResize(
   reverse: Ref<boolean> = ref(false),
   minSize: { width: number; height: number } = { width: 20, height: 40 }
 ) {
-  const resizedBoundingRect = ref<Rect>({
-    width: null,
-    height: null,
-    left: null,
-    top: null
-  })
+  const { initialRect: resizedBoundingRect } = useInitialRect(targetRef)
   const isResizing = ref(false)
   let initialLeft = 0
   let initialWidth = 0

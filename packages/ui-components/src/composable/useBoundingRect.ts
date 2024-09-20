@@ -1,8 +1,7 @@
-import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
+import { onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
 import { Position, WIDTH_OF_TITLE_BAR } from './types'
 import { useAutoOpen } from './useAutoOpen'
-import { useInitialRect } from './useInitialRect'
 import { useResize } from './useResize'
 import { useTransition } from './useTransition'
 
@@ -26,33 +25,34 @@ export function useBoundingRect(
 ) {
   const windowWidth = ref(window.innerWidth)
   const windowHeight = ref(window.innerHeight)
-  const { initialRect } = useInitialRect(toolPaletteRef)
-  const { rect: resizedRect } = useResize(toolPaletteRef, collapsed, reversed)
+  const { rect } = useResize(toolPaletteRef, collapsed, reversed)
   const { autoOpened } = useAutoOpen(toolPaletteRef, titleBarRef, collapsed)
   useTransition(toolPaletteRef, reversed, collapsed, autoOpened)
-
-  const rect = computed(() => {
-    return resizedRect.value.width && resizedRect.value.height
-      ? resizedRect.value
-      : initialRect.value
-  })
 
   // Modify the position of this tool palette according to current orientation
   const setTargetPos = (xDelta: number) => {
     if (toolPaletteRef.value) {
       const temp = toolPaletteRef.value.getBoundingClientRect()
+      const tempLeft = temp.left + xDelta
       if (reversed.value) {
-        // TODO: It seems there are something wrong here. We should set `resizedRect` only and don't need to
-        // update tool palette style. But it doesn't work.
-        resizedRect.value.left = temp.left + xDelta
-        initialRect.value.left = temp.left + xDelta
-        //toolPaletteRef.value.style.left = temp.left + xDelta + 'px'
+        rect.value.left = tempLeft
+
+        // If the following conditions are met, decrease the gap between the right side of tool palette and right side of window
+        // - the gap between the right side of tool palette and right side of window equal to or greater than 0, 
+        // - The left side of window overlaps with the left side of tool platte
+        const rightGap = window.innerWidth - temp.width - temp.left
+        if (temp.left <= 0 && rightGap >= 0 && xDelta < 0) {
+          rect.value.left = Math.max(0, tempLeft)
+        }
+
+        // If window width is too small to contain tool palette, just keep tool palette docked on the right side of window
+        if (window.innerWidth - temp.width <= 0) {
+          rect.value.left = window.innerWidth - temp.width
+        }
       } else {
-        // The left side of window overlaps with the right side of tool platte
+        // The right side of window overlaps with the right side of tool platte
         if (((temp.left + temp.width) >= window.innerWidth) && xDelta < 0) {
-          const left = Math.max(0, temp.left + xDelta)
-          resizedRect.value.left = left
-          initialRect.value.left = left
+          rect.value.left = Math.max(0, tempLeft)
         }
       }
     }
