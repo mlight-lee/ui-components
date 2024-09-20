@@ -8,7 +8,7 @@ import {
   watch
 } from 'vue'
 
-import { Position } from './types'
+import { Position, WIDTH_OF_TITLE_BAR } from './types'
 
 /**
  * Options to use `useDrag`
@@ -99,7 +99,7 @@ export function useDrag(
           ? options.value.container.clientWidth
           : 0
       const distanceToRightBorder =
-        viewportWidth - containerWidth - elementWidth
+        viewportWidth - containerWidth - elementWidth + WIDTH_OF_TITLE_BAR - 3
       position.value.x = Math.min(
         options
           ? distanceToRightBorder - options.value.rightGap

@@ -39,9 +39,22 @@ export function useBoundingRect(
 
   // Modify the position of this tool palette according to current orientation
   const setTargetPos = (xDelta: number) => {
-    if (toolPaletteRef.value && reversed.value) {
-      const rect = toolPaletteRef.value.getBoundingClientRect()
-      toolPaletteRef.value.style.left = rect.left + xDelta + 'px'
+    if (toolPaletteRef.value) {
+      const temp = toolPaletteRef.value.getBoundingClientRect()
+      if (reversed.value) {
+        // TODO: It seems there are something wrong here. We should set `resizedRect` only and don't need to
+        // update tool palette style. But it doesn't work.
+        resizedRect.value.left = temp.left + xDelta
+        initialRect.value.left = temp.left + xDelta
+        //toolPaletteRef.value.style.left = temp.left + xDelta + 'px'
+      } else {
+        // The left side of window overlaps with the right side of tool platte
+        if (((temp.left + temp.width) >= window.innerWidth) && xDelta < 0) {
+          const left = Math.max(0, temp.left + xDelta)
+          resizedRect.value.left = left
+          initialRect.value.left = left
+        }
+      }
     }
   }
 

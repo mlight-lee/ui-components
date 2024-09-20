@@ -1,6 +1,6 @@
 import { Ref, ref, watch } from 'vue'
 
-import { Orientation, WIDTH_OF_TITLE_BAR } from './types'
+import { Orientation } from './types'
 import { DragOptions, useDrag } from './useDrag'
 
 /**
@@ -32,7 +32,7 @@ export function useDragEx(
         orientation.value = 'left'
         docked.value = true
       } else if (
-        window.innerWidth - rect.left - rect.width - WIDTH_OF_TITLE_BAR <=
+        window.innerWidth - rect.left - rect.width <=
         options.value.rightGap
       ) {
         orientation.value = 'right'
