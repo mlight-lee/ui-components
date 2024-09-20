@@ -30,7 +30,7 @@ export interface DragOptions {
  * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
  * @param options Input dragging options to customize dragging behaviors
- * @returns Return thefollowing data
+ * @returns Return the following data
  * - isDragging: flag to indicate whether the element is in dragging state
  * - movement: movement based on the original position of the element
  * - position: new left and top position of the element after dragged
@@ -88,6 +88,7 @@ export function useDrag(
       const newX = position.value.x + e.movementX
       const newY = position.value.y + e.movementY
 
+      // Set left/right position according to gap constraints in dragging options
       position.value.x = Math.max(
         options ? options.value.gap.value.left : 0,
         Math.min(newX, viewportWidth - elementWidth)
@@ -104,10 +105,24 @@ export function useDrag(
           : distanceToRightBorder,
         position.value.x
       )
+
+      // Set top/bottom position according to gap constraints in dragging options
       position.value.y = Math.max(
-        0,
+        options ? options.value.gap.value.top : 0,
         Math.min(newY, viewportHeight - elementHeight)
       )
+      const containerHeight =
+        options && options.value.container
+          ? options.value.container.clientHeight
+          : 0
+      const distanceToBottomBorder =
+        viewportHeight - containerHeight - 3
+      position.value.y = Math.min(
+          options
+            ? distanceToBottomBorder - options.value.gap.value.bottom
+            : distanceToBottomBorder,
+          position.value.y
+        )
 
       // Update values of left and top attributes of container element
       if (options?.value.container) {
