@@ -5,6 +5,16 @@ export interface Rect {
   height?: number | null
 }
 
+/**
+ * The minimum distance from the border of one element to the border of the window
+ */
+export interface Gap {
+  left: number
+  top: number
+  right: number
+  bottom: number
+}
+
 export interface Position {
   x: number
   y: number

@@ -28,12 +28,12 @@ export function useDragEx(
     if (newVal && options.value.container) {
       const element = options.value.container as HTMLElement
       const rect = element.getBoundingClientRect()
-      if (rect.left <= options.value.leftGap) {
+      if (rect.left <= options.value.gap.value.left) {
         orientation.value = 'left'
         docked.value = true
       } else if (
         window.innerWidth - rect.left - rect.width <=
-        options.value.rightGap
+        options.value.gap.value.right
       ) {
         orientation.value = 'right'
         docked.value = true

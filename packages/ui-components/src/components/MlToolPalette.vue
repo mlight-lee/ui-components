@@ -56,6 +56,22 @@ interface Props {
    * The title of tool palette dialog
    */
   title?: string
+  /**
+   * The minimum distance from the left side of one element to the left side of the window
+   */
+  leftGap?: number
+  /**
+   * The minimum distance from the right side of one element to the right side of the window
+   */
+  rightGap?: number
+  /**
+   * The minimum distance from the top side of one element to the top side of the window
+   */
+  topGap?: number
+  /**
+   * The minimum distance from the bottom side of one element to the bottom side of the window
+   */
+  bottomGap?: number
 }
 
 interface Events {
@@ -68,7 +84,11 @@ interface Events {
 
 // Attributes of tool palette component
 const props = withDefaults(defineProps<Props>(), {
-  title: ''
+  title: '',
+  leftGap: 0,
+  rightGap: 0,
+  topGap: 0,
+  bottomGap: 0
 })
 // Flag to control whether the tool palette is visible
 const visible = defineModel({ default: true })
@@ -91,8 +111,12 @@ const reversed = computed(() => {
 
 const dragOptions = computed<DragOptions>(() => {
   return {
-    leftGap: 0,
-    rightGap: 0,
+    gap: ref({
+      left: props.leftGap,
+      right: props.rightGap,
+      top: props.topGap,
+      bottom: props.bottomGap
+    }),
     container: toolPaletteElement.value
   }
 })
@@ -105,7 +129,8 @@ const { rect: toolPaletteRect } = useBoundingRect(
   titleBarElement,
   reversed,
   collapsed,
-  movement
+  movement,
+  dragOptions.value.gap
 )
 
 // Resized style

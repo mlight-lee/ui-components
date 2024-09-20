@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
-import { Position, WIDTH_OF_TITLE_BAR } from './types'
+import { Gap, Position, WIDTH_OF_TITLE_BAR } from './types'
 import { useAutoOpen } from './useAutoOpen'
 import { useResize } from './useResize'
 import { useTransition } from './useTransition'
@@ -14,6 +14,9 @@ import { useTransition } from './useTransition'
  * @param reversed Input flag whether to reverse cllapse icon
  * @param collapsed Input flag to indicate whether the tool palette is collapsed
  * @param movement Input dragging movement
+ * @param gap Input the minimum distance from the side of the element to the side of the window.
+ * If the position of the element `targetRef` is located within the specified gap area, just modify
+ * its position to not intersect with the gap area.
  * @returns Return the bounding rect of the tool palette
  */
 export function useBoundingRect(
@@ -21,11 +24,12 @@ export function useBoundingRect(
   titleBarRef: Ref<HTMLElement | null>,
   reversed: Ref<boolean>,
   collapsed: Ref<boolean>,
-  movement: Ref<Position>
+  movement: Ref<Position>,
+  gap: Ref<Gap> = ref({ left: 0, right: 0, top: 0, bottom: 0 })
 ) {
   const windowWidth = ref(window.innerWidth)
   const windowHeight = ref(window.innerHeight)
-  const { rect } = useResize(toolPaletteRef, collapsed, reversed)
+  const { rect } = useResize(toolPaletteRef, collapsed, reversed, gap)
   const { autoOpened } = useAutoOpen(toolPaletteRef, titleBarRef, collapsed)
   useTransition(toolPaletteRef, reversed, collapsed, autoOpened)
 

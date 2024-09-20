@@ -8,20 +8,18 @@ import {
   watch
 } from 'vue'
 
-import { Position, WIDTH_OF_TITLE_BAR } from './types'
+import { Gap, Position, WIDTH_OF_TITLE_BAR } from './types'
 
 /**
  * Options to use `useDrag`
  */
 export interface DragOptions {
   /**
-   * The minimum distance from the left border of the element to the left border of the window
+   * The minimum distance from the side of the element to the side of the window. If the position of the 
+   * element `targetRef` is located in the specified gap area, just modify its position to not intersect
+   * with the gap area.
    */
-  leftGap: number
-  /**
-   * The minimum distance from the right border of the element to the right border of the window
-   */
-  rightGap: number
+  gap: Ref<Gap>
   /**
    * The container HTML element. Its left and top attributes will be modified when mouse is moving.
    */
@@ -91,7 +89,7 @@ export function useDrag(
       const newY = position.value.y + e.movementY
 
       position.value.x = Math.max(
-        options ? options.value.leftGap : 0,
+        options ? options.value.gap.value.left : 0,
         Math.min(newX, viewportWidth - elementWidth)
       )
       const containerWidth =
@@ -102,7 +100,7 @@ export function useDrag(
         viewportWidth - containerWidth - elementWidth + WIDTH_OF_TITLE_BAR - 3
       position.value.x = Math.min(
         options
-          ? distanceToRightBorder - options.value.rightGap
+          ? distanceToRightBorder - options.value.gap.value.right
           : distanceToRightBorder,
         position.value.x
       )
