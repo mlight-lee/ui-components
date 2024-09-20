@@ -28,7 +28,6 @@
           class="ml-tool-palette-dialog-icon"
           v-model="collapsed"
           :reverse="reversed"
-          @change="handleCollapsed"
         />
         <span class="ml-tool-palette-title">{{ props.title }}</span>
       </div>
@@ -76,7 +75,7 @@ interface Props {
 
 interface Events {
   /**
-   * Trigger this event when closing the tool palette.
+   * Trigger this event when the tool palette closed.
    * @param pos The left and top position of the tool palette before closed
    */
   (e: 'close', pos: { x: number; y: number }): void
@@ -129,6 +128,7 @@ const { rect: toolPaletteRect } = useBoundingRect(
   titleBarElement,
   reversed,
   collapsed,
+  docked,
   movement,
   dragOptions.value.gap
 )
@@ -139,13 +139,9 @@ const resizedStyle = computed(() => {
     left: `${toolPaletteRect.value.left}px`,
     top: `${toolPaletteRect.value.top}px`,
     width: `${toolPaletteRect.value.width}px`,
-    height: docked.value ? '100%' : `${toolPaletteRect.value.height}px`
+    height: `${toolPaletteRect.value.height}px`
   }
 })
-
-const handleCollapsed = (value: boolean) => {
-  collapsed.value = value
-}
 
 const handleClose = () => {
   visible.value = false
