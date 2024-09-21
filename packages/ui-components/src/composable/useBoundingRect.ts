@@ -30,7 +30,7 @@ export function useBoundingRect(
 ) {
   const windowWidth = ref(window.innerWidth)
   const windowHeight = ref(window.innerHeight)
-  const { docked, orientation, movement } = useDragEx(
+  const { docked, orientation, movement, position, isDragging } = useDragEx(
     titleBarRef,
     dragOptions
   )
@@ -39,7 +39,7 @@ export function useBoundingRect(
     return orientation.value === 'right'
   })
   const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.gap)
-  const { width: toolPaletteWidth } = useLeftPosAndWidth(rect, isResizing)
+  const { width: toolPaletteWidth, left: toolPaletteLeft } = useLeftPosAndWidth(rect, isResizing, position, isDragging)
   const { lastTop, lastHeight } = useLastPosAndSize(
     computed(() => rect.value.left),
     computed(() => rect.value.top),
@@ -96,13 +96,13 @@ export function useBoundingRect(
   const setLeftPosAndWidth = (shrink: boolean) => {
     if (shrink) {
       rect.value.width = WIDTH_OF_TITLE_BAR
-      if (reversed.value && rect.value.left) {
-        rect.value.left = rect.value.left + (toolPaletteWidth.value || 0) - WIDTH_OF_TITLE_BAR
+      if (reversed.value && toolPaletteLeft.value && toolPaletteWidth.value) {
+        rect.value.left = toolPaletteLeft.value + toolPaletteWidth.value - WIDTH_OF_TITLE_BAR
       }
     } else {
       rect.value.width = toolPaletteWidth.value
-      if (reversed.value && rect.value.left) {
-        rect.value.left = rect.value.left - (toolPaletteWidth.value || 0) + WIDTH_OF_TITLE_BAR
+      if (reversed.value && toolPaletteLeft.value && toolPaletteWidth.value) {
+        rect.value.left = toolPaletteLeft.value
       }
     }
   }
@@ -128,12 +128,8 @@ export function useBoundingRect(
 
   watch(autoOpened, newVal => {
     // `autoOpened` takes effect only if `collapsed` is true.
-    if (collapsed.value) {
-      if (!reversed.value) {
-        setLeftPosAndWidth(!newVal)
-      } else {
-        setLeftPosAndWidth(!newVal)
-      }
+    if (collapsed.value && !isDragging.value) {
+      setLeftPosAndWidth(!newVal)
     }
   })
 
