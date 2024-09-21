@@ -1,8 +1,11 @@
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
-import { Gap, Position, WIDTH_OF_TITLE_BAR } from './types'
+import { WIDTH_OF_TITLE_BAR } from './types'
 import { useAutoOpen } from './useAutoOpen'
+import { DragOptions } from './useDrag'
+import { useDragEx } from './useDragEx'
 import { useLastPosAndSize } from './useLastPosAndSize'
+import { useLeftPosAndWidth } from './useLeftPosAndWidth'
 import { useResize } from './useResize'
 import { useTransition } from './useTransition'
 
@@ -14,8 +17,6 @@ import { useTransition } from './useTransition'
  * @param titleBarRef Input the title bar element of the tool palette
  * @param reversed Input flag whether to reverse cllapse icon
  * @param collapsed Input flag to indicate whether the tool palette is collapsed
- * @param docked Input flag to indicate whether the tool palette is docked on the left/right border of the window
- * @param movement Input dragging movement
  * @param gap Input the minimum distance from the side of the element to the side of the window.
  * If the position of the element `targetRef` is located within the specified gap area, just modify
  * its position to not intersect with the gap area.
@@ -26,13 +27,16 @@ export function useBoundingRect(
   titleBarRef: Ref<HTMLElement | null>,
   reversed: Ref<boolean>,
   collapsed: Ref<boolean>,
-  docked: Ref<boolean>,
-  movement: Ref<Position>,
-  gap: Ref<Gap> = ref({ left: 0, right: 0, top: 0, bottom: 0 })
+  dragOptions: Ref<DragOptions>
 ) {
   const windowWidth = ref(window.innerWidth)
   const windowHeight = ref(window.innerHeight)
-  const { rect } = useResize(toolPaletteRef, collapsed, reversed, gap)
+  const { docked, orientation, movement } = useDragEx(
+    titleBarRef,
+    dragOptions
+  )
+  const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.gap)
+  const { width: toolPaletteWidth } = useLeftPosAndWidth(rect, isResizing)
   const { lastTop, lastHeight } = useLastPosAndSize(
     computed(() => rect.value.left),
     computed(() => rect.value.top),
@@ -86,27 +90,24 @@ export function useBoundingRect(
     window.removeEventListener('resize', updateWindowSize)
   })
 
-  let oldWidth: number | null | undefined = null
-  const collapse = (collapsed: boolean, resetOldWidth: boolean = true) => {
-    if (collapsed) {
-      if (resetOldWidth) oldWidth = rect.value.width
+  const setLeftPosAndWidth = (shrink: boolean) => {
+    if (shrink) {
       rect.value.width = WIDTH_OF_TITLE_BAR
-      if (reversed.value && rect.value.left && oldWidth) {
-        rect.value.left = rect.value.left + oldWidth - WIDTH_OF_TITLE_BAR
+      if (reversed.value && rect.value.left) {
+        rect.value.left = rect.value.left + (toolPaletteWidth.value || 0) - WIDTH_OF_TITLE_BAR
       }
     } else {
-      rect.value.width = oldWidth
-      if (reversed.value && rect.value.left && oldWidth) {
-        rect.value.left = rect.value.left - oldWidth + WIDTH_OF_TITLE_BAR
+      rect.value.width = toolPaletteWidth.value
+      if (reversed.value && rect.value.left) {
+        rect.value.left = rect.value.left - (toolPaletteWidth.value || 0) + WIDTH_OF_TITLE_BAR
       }
-      if (resetOldWidth) oldWidth = null
     }
   }
 
   const setDockedHeight = () => {
     if (docked.value) {
-      rect.value.top = gap.value.top
-      rect.value.height = window.innerHeight - gap.value.top - gap.value.bottom
+      rect.value.top = dragOptions.value.gap.value.top
+      rect.value.height = window.innerHeight - dragOptions.value.gap.value.top - dragOptions.value.gap.value.bottom
     } else {
       rect.value.top = lastTop.value
       rect.value.height = lastHeight.value
@@ -119,13 +120,17 @@ export function useBoundingRect(
 
   // Watch collapsed state. If it is collapsed, store the old width in order to reuse it when expanding the tool palette
   watch(collapsed, newVal => {
-    collapse(newVal, true)
+    setLeftPosAndWidth(newVal)
   })
 
   watch(autoOpened, newVal => {
     // `autoOpened` takes effect only if `collapsed` is true.
     if (collapsed.value) {
-      collapse(!newVal, false)
+      if (!reversed.value) {
+        setLeftPosAndWidth(!newVal)
+      } else {
+        setLeftPosAndWidth(!newVal)
+      }
     }
   })
 
@@ -138,5 +143,5 @@ export function useBoundingRect(
     }
   })
 
-  return { rect }
+  return { rect, orientation }
 }

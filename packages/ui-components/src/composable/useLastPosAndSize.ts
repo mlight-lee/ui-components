@@ -1,5 +1,13 @@
 import { Ref, ref, watch } from 'vue'
 
+/**
+ * Store old position and size once there are any change to position and size
+ * @param currentLeft Input current left postion
+ * @param currentTop Input current right postion
+ * @param currentWidth Input current width
+ * @param currentHeight Input current height
+ * @returns Return old position and size
+ */
 export function useLastPosAndSize(
   currentLeft: Ref<number | null | undefined>,
   currentTop: Ref<number | null | undefined>,
