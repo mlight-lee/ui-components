@@ -102,11 +102,6 @@ const titleBarElement = ref<HTMLElement | null>(null)
 // Reference to tool palette HTML element
 const toolPaletteElement = ref<HTMLElement | null>(null)
 
-// Flag to reverse cllapse icon
-const reversed = computed(() => {
-  return orientation.value === 'right'
-})
-
 const dragOptions = computed<DragOptions>(() => {
   return {
     gap: ref({
@@ -118,10 +113,9 @@ const dragOptions = computed<DragOptions>(() => {
     container: toolPaletteElement.value
   }
 })
-const { rect: toolPaletteRect, orientation } = useBoundingRect(
+const { rect: toolPaletteRect, orientation, reversed } = useBoundingRect(
   toolPaletteElement,
   titleBarElement,
-  reversed,
   collapsed,
   dragOptions
 )

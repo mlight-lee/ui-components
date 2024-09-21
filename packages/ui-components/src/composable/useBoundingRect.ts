@@ -15,17 +15,16 @@ import { useTransition } from './useTransition'
  * - Otherwise, return the size and postion after resized
  * @param toolPaletteRef Input the tool palette element to get its bounding rect
  * @param titleBarRef Input the title bar element of the tool palette
- * @param reversed Input flag whether to reverse cllapse icon
  * @param collapsed Input flag to indicate whether the tool palette is collapsed
- * @param gap Input the minimum distance from the side of the element to the side of the window.
- * If the position of the element `targetRef` is located within the specified gap area, just modify
- * its position to not intersect with the gap area.
- * @returns Return the bounding rect of the tool palette
+ * @param dragOptions Input dragging options
+ * @returns Return the following data.
+ * - rect: the bounding rect of the tool palette
+ * - orientation: the orientation of the tool palette. For now, 'left' and 'right' are supported.
+ * - reversed: flag whether to reverse cllapse icon
  */
 export function useBoundingRect(
   toolPaletteRef: Ref<HTMLElement | null>,
   titleBarRef: Ref<HTMLElement | null>,
-  reversed: Ref<boolean>,
   collapsed: Ref<boolean>,
   dragOptions: Ref<DragOptions>
 ) {
@@ -35,6 +34,10 @@ export function useBoundingRect(
     titleBarRef,
     dragOptions
   )
+  // Flag to reverse cllapse icon
+  const reversed = computed(() => {
+    return orientation.value === 'right'
+  })
   const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.gap)
   const { width: toolPaletteWidth } = useLeftPosAndWidth(rect, isResizing)
   const { lastTop, lastHeight } = useLastPosAndSize(
@@ -143,5 +146,5 @@ export function useBoundingRect(
     }
   })
 
-  return { rect, orientation }
+  return { rect, orientation, reversed }
 }
