@@ -109,8 +109,7 @@ const dragOptions = computed<DragOptions>(() => {
       right: props.rightGap,
       top: props.topGap,
       bottom: props.bottomGap
-    }),
-    container: toolPaletteElement.value
+    })
   }
 })
 const { rect: toolPaletteRect, orientation, reversed } = useBoundingRect(

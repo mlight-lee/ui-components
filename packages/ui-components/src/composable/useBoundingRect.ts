@@ -31,6 +31,7 @@ export function useBoundingRect(
   const windowWidth = ref(window.innerWidth)
   const windowHeight = ref(window.innerHeight)
   const { docked, orientation, movement, position, isDragging } = useDragEx(
+    toolPaletteRef,
     titleBarRef,
     dragOptions
   )

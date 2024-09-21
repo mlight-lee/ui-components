@@ -8,7 +8,7 @@ import {
   watch
 } from 'vue'
 
-import { Gap, Position, WIDTH_OF_TITLE_BAR } from './types'
+import { Gap, Position } from './types'
 
 /**
  * Options to use `useDrag`
@@ -20,15 +20,13 @@ export interface DragOptions {
    * with the gap area.
    */
   gap: Ref<Gap>
-  /**
-   * The container HTML element. Its left and top attributes will be modified when mouse is moving.
-   */
-  container: HTMLElement | null
 }
 
 /**
  * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
+ * @param dragElementRef If it isn't null, `targetRef` can be dragged only if
+ * start dragging from this element.
  * @param options Input dragging options to customize dragging behaviors
  * @returns Return the following data
  * - isDragging: flag to indicate whether the element is in dragging state
@@ -37,6 +35,7 @@ export interface DragOptions {
  */
 export function useDrag(
   targetRef: Ref<HTMLElement | null>,
+  dragElementRef?: Ref<HTMLElement | null>,
   options?: Ref<DragOptions>
 ) {
   const isDragging = ref(false)
@@ -71,7 +70,17 @@ export function useDrag(
     }
   }
 
-  const onMouseDown = () => {
+  const onMouseDown = (event: MouseEvent) => {
+    // Check whether mouse clicks on `dragElementRef`
+    if (dragElementRef && dragElementRef.value) {
+      const rect = dragElementRef.value.getBoundingClientRect()
+      const isOutside =
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom
+      if (isOutside) return
+    }
     isDragging.value = true
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
@@ -93,12 +102,7 @@ export function useDrag(
         options ? options.value.gap.value.left : 0,
         Math.min(newX, viewportWidth - elementWidth)
       )
-      const containerWidth =
-        options && options.value.container
-          ? options.value.container.clientWidth
-          : 0
-      const distanceToRightBorder =
-        viewportWidth - containerWidth - elementWidth + WIDTH_OF_TITLE_BAR - 3
+      const distanceToRightBorder = viewportWidth - elementWidth
       position.value.x = Math.min(
         options
           ? distanceToRightBorder - options.value.gap.value.right
@@ -111,12 +115,7 @@ export function useDrag(
         options ? options.value.gap.value.top : 0,
         Math.min(newY, viewportHeight - elementHeight)
       )
-      const containerHeight =
-        options && options.value.container
-          ? options.value.container.clientHeight
-          : 0
-      const distanceToBottomBorder =
-        viewportHeight - containerHeight - 3
+      const distanceToBottomBorder = viewportHeight - elementHeight
       position.value.y = Math.min(
           options
             ? distanceToBottomBorder - options.value.gap.value.bottom
@@ -125,12 +124,8 @@ export function useDrag(
         )
 
       // Update values of left and top attributes of container element
-      if (options?.value.container) {
-        const container = options?.value.container
-        // const rect = container.getBoundingClientRect()
-        container.style.left = position.value.x + 'px'
-        container.style.top = position.value.y + 'px'
-      }
+      element.style.left = position.value.x + 'px'
+      element.style.top = position.value.y + 'px'
     }
   }
 
