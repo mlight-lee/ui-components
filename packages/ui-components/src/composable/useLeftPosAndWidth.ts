@@ -18,27 +18,28 @@ import { Position, Rect } from './types'
 export function useLeftPosAndWidth(
   rect: Ref<Rect>,
   isResizing: Ref<boolean>,
-  position: Ref<Position>,
+  position: Ref<Position | null>,
   isDragging: Ref<boolean>
 ) {
   const width = ref<number | null | undefined>(rect.value.width)
   const left = ref<number | null | undefined>(rect.value.left)
   const resizeWidth = computed(() => rect.value.width)
   const resizedLeft = computed(() => rect.value.left)
+  const draggedLeft = computed(() => position.value ? position.value.x : null)
 
-  watch([resizeWidth, resizedLeft, isResizing], ([newWidthVal, newLeftVal, newIsResizingVal]) => {
+  watch([resizeWidth, resizedLeft], ([newWidthVal, newLeftVal]) => {
     if (width.value == null || left.value == null) {
       width.value = newWidthVal
       left.value = newLeftVal
-    } else if (newIsResizingVal) {
+    } else if (isResizing.value) {
       width.value = newWidthVal
       left.value = newLeftVal
     }
   })
 
-  watch(isDragging, (newVal) => {
-    if (newVal && position.value) {
-      left.value = position.value.x
+  watch(draggedLeft, (newVal) => {
+    if (isDragging.value && position.value) {
+      left.value = newVal
     }
   })
 

@@ -170,6 +170,6 @@ export function useDrag(
   return {
     isDragging,
     movement,
-    position: position as Ref<Position>
+    position: position
   }
 }
