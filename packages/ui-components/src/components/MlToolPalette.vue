@@ -55,21 +55,21 @@ interface Props {
    */
   title?: string
   /**
-   * The minimum distance from the left side of one element to the left side of the window
+   * The minimum distance from the left side of the tool palette to the left side of the window
    */
-  leftGap?: number
+  leftOffset?: number
   /**
-   * The minimum distance from the right side of one element to the right side of the window
+   * The minimum distance from the right side of the tool palette to the right side of the window
    */
-  rightGap?: number
+  rightOffset?: number
   /**
-   * The minimum distance from the top side of one element to the top side of the window
+   * The minimum distance from the top side of the tool palette to the top side of the window
    */
-  topGap?: number
+  topOffset?: number
   /**
-   * The minimum distance from the bottom side of one element to the bottom side of the window
+   * The minimum distance from the bottom side of the tool palette to the bottom side of the window
    */
-  bottomGap?: number
+  bottomOffset?: number
 }
 
 interface Events {
@@ -83,10 +83,10 @@ interface Events {
 // Attributes of tool palette component
 const props = withDefaults(defineProps<Props>(), {
   title: '',
-  leftGap: 0,
-  rightGap: 0,
-  topGap: 0,
-  bottomGap: 0
+  leftOffset: 0,
+  rightOffset: 0,
+  topOffset: 0,
+  bottomOffset: 0
 })
 // Flag to control whether the tool palette is visible
 const visible = defineModel({ default: true })
@@ -104,11 +104,11 @@ const toolPaletteElement = ref<HTMLElement | null>(null)
 
 const dragOptions = computed<DragOptions>(() => {
   return {
-    gap: ref({
-      left: props.leftGap,
-      right: props.rightGap,
-      top: props.topGap,
-      bottom: props.bottomGap
+    offset: ref({
+      left: props.leftOffset,
+      right: props.rightOffset,
+      top: props.topOffset,
+      bottom: props.bottomOffset
     })
   }
 })

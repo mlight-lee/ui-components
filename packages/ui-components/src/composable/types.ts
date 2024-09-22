@@ -8,7 +8,7 @@ export interface Rect {
 /**
  * The minimum distance from the border of one element to the border of the window
  */
-export interface Gap {
+export interface Offset {
   left: number
   top: number
   right: number

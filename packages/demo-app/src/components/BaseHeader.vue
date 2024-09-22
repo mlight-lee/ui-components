@@ -49,6 +49,8 @@ const handleToolPalette = () => {
     class="tool-palette"
     v-model="toolPaletteVisible"
     title="Tool Palette Test"
+    :top-offset="60"
+    :bottom-offset="20"
   >
     <span>Tool Palette Test</span>
   </ml-tool-palette>

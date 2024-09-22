@@ -7,7 +7,7 @@ import {
   watch
 } from 'vue'
 
-import { Gap, Position } from './types'
+import { Offset, Position } from './types'
 
 /**
  * Options to use `useDrag`
@@ -15,10 +15,10 @@ import { Gap, Position } from './types'
 export interface DragOptions {
   /**
    * The minimum distance from the side of the element to the side of the window. If the position of the 
-   * element `targetRef` is located in the specified gap area, just modify its position to not intersect
-   * with the gap area.
+   * element `targetRef` is located in the specified offset area, just modify its position to not intersect
+   * with the offset area.
    */
-  gap: Ref<Gap>
+  offset: Ref<Offset>
 }
 
 /**
@@ -53,6 +53,20 @@ export function useDrag(
       }
   })
 
+  const setInitialPosition = () => {
+    if (targetRef.value) {
+      const rect = targetRef.value.getBoundingClientRect()
+      initialPosition.value = {
+        x: rect.left,
+        y: rect.top
+      }
+      position.value = {
+        x: rect.left,
+        y: rect.top
+      }
+    }
+  }
+
   const addEventListeners = () => {
     if (targetRef.value) {
       targetRef.value.addEventListener('mousedown', onMouseDown)
@@ -83,15 +97,7 @@ export function useDrag(
     mouseStartPos.x = event.clientX
     mouseStartPos.y = event.clientY
 
-    const rect = targetRef.value.getBoundingClientRect()
-    initialPosition.value = {
-      x: rect.left,
-      y: rect.top
-    }
-    position.value = {
-      x: rect.left,
-      y: rect.top
-    }
+    setInitialPosition()
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   }
@@ -108,28 +114,28 @@ export function useDrag(
       const newX = initialPosition.value.x + (e.clientX - mouseStartPos.x)
       const newY = initialPosition.value.y + (e.clientY - mouseStartPos.y)
 
-      // Set left/right position according to gap constraints in dragging options
+      // Set left/right position according to offset constraints in dragging options
       position.value.x = Math.max(
-        options ? options.value.gap.value.left : 0,
+        options ? options.value.offset.value.left : 0,
         newX
       )
       const distanceToRightBorder = viewportWidth - elementWidth
       position.value.x = Math.min(
         options
-          ? distanceToRightBorder - options.value.gap.value.right
+          ? distanceToRightBorder - options.value.offset.value.right
           : distanceToRightBorder,
         position.value.x
       )
 
-      // Set top/bottom position according to gap constraints in dragging options
+      // Set top/bottom position according to offset constraints in dragging options
       position.value.y = Math.max(
-        options ? options.value.gap.value.top : 0,
+        options ? options.value.offset.value.top : 0,
         Math.min(newY, viewportHeight - elementHeight)
       )
       const distanceToBottomBorder = viewportHeight - elementHeight
       position.value.y = Math.min(
           options
-            ? distanceToBottomBorder - options.value.gap.value.bottom
+            ? distanceToBottomBorder - options.value.offset.value.bottom
             : distanceToBottomBorder,
           position.value.y
         )
@@ -148,6 +154,7 @@ export function useDrag(
 
   onMounted(() => {
     if (targetRef.value) {
+      setInitialPosition() // Set initial position from CSS
       addEventListeners()
     }
   })
@@ -161,6 +168,7 @@ export function useDrag(
   // Watch for changes in the targetRef, to handle cases where v-if makes the element appear/disappear
   watch(targetRef, newVal => {
     if (newVal) {
+      setInitialPosition() // Set initial position from CSS
       addEventListeners()
     } else {
       removeEventListeners()
