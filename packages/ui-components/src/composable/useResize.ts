@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
-import { Gap } from './types';
+import { Offset } from './types';
 import { useInitialRect } from './useInitialRect';
 
 /**
@@ -11,9 +11,9 @@ import { useInitialRect } from './useInitialRect';
  * @param reverse Input flag to decide where to resize the element
  * @param collapsed Input flag to indicate whether the tool palette is collapsed. If `collapsed` is true,
  * the element can't be resized
- * @param gap Input the minimum distance from the side of the element to the side of the window.
- * If the position of the element `targetRef` is located within the specified gap area, just modify
- * its position to not intersect with the gap area.
+ * @param offset Input the minimum distance from the side of the element to the side of the window.
+ * If the position of the element `targetRef` is located within the specified offset area, just modify
+ * its position to not intersect with the offset area.
  * @param minSize Input minimum size to resize.
  * @returns Return the following data.
  * - width: new width of the element after resized
@@ -24,10 +24,10 @@ export function useResize(
   targetRef: Ref<HTMLElement | null>,
   collapsed: Ref<boolean> = ref(false),
   reverse: Ref<boolean> = ref(false),
-  gap: Ref<Gap> = ref({ left: 0, right: 0, top: 0, bottom: 0 }),
+  offset: Ref<Offset> = ref({ left: 0, right: 0, top: 0, bottom: 0 }),
   minSize: { width: number; height: number } = { width: 20, height: 40 },
 ) {
-  const { initialRect: resizedBoundingRect } = useInitialRect(targetRef, gap)
+  const { initialRect: resizedBoundingRect } = useInitialRect(targetRef, offset)
   const isResizing = ref(false)
   let initialLeft = 0
   let initialWidth = 0

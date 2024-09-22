@@ -7,7 +7,7 @@ import {
   watch
 } from 'vue'
 
-import { Gap, Position } from './types'
+import { Offset, Position } from './types'
 
 /**
  * Options to use `useDrag`
@@ -15,10 +15,10 @@ import { Gap, Position } from './types'
 export interface DragOptions {
   /**
    * The minimum distance from the side of the element to the side of the window. If the position of the 
-   * element `targetRef` is located in the specified gap area, just modify its position to not intersect
-   * with the gap area.
+   * element `targetRef` is located in the specified offset area, just modify its position to not intersect
+   * with the offset area.
    */
-  gap: Ref<Gap>
+  offset: Ref<Offset>
 }
 
 /**
@@ -114,28 +114,28 @@ export function useDrag(
       const newX = initialPosition.value.x + (e.clientX - mouseStartPos.x)
       const newY = initialPosition.value.y + (e.clientY - mouseStartPos.y)
 
-      // Set left/right position according to gap constraints in dragging options
+      // Set left/right position according to offset constraints in dragging options
       position.value.x = Math.max(
-        options ? options.value.gap.value.left : 0,
+        options ? options.value.offset.value.left : 0,
         newX
       )
       const distanceToRightBorder = viewportWidth - elementWidth
       position.value.x = Math.min(
         options
-          ? distanceToRightBorder - options.value.gap.value.right
+          ? distanceToRightBorder - options.value.offset.value.right
           : distanceToRightBorder,
         position.value.x
       )
 
-      // Set top/bottom position according to gap constraints in dragging options
+      // Set top/bottom position according to offset constraints in dragging options
       position.value.y = Math.max(
-        options ? options.value.gap.value.top : 0,
+        options ? options.value.offset.value.top : 0,
         Math.min(newY, viewportHeight - elementHeight)
       )
       const distanceToBottomBorder = viewportHeight - elementHeight
       position.value.y = Math.min(
           options
-            ? distanceToBottomBorder - options.value.gap.value.bottom
+            ? distanceToBottomBorder - options.value.offset.value.bottom
             : distanceToBottomBorder,
           position.value.y
         )

@@ -19,7 +19,7 @@ AutoCAD uses [tool palettes](https://help.autodesk.com/view/ACD/2025/ENU/?guid=G
 
 <img src="./doc/palette.jpg" alt="Tool Palette Example">
 
-You can customize tool palette by the following properties. More properties will be coming soon.
+You can customize tool palette by the following properties. 
 
 ```javascript
 /**
@@ -30,8 +30,26 @@ interface Props {
    * The title of tool palette dialog
    */
   title?: string
+  /**
+   * The minimum distance from the left side of the tool palette to the left side of the window
+   */
+  leftOffset?: number
+  /**
+   * The minimum distance from the right side of the tool palette to the right side of the window
+   */
+  rightOffset?: number
+  /**
+   * The minimum distance from the top side of the tool palette to the top side of the window
+   */
+  topOffset?: number
+  /**
+   * The minimum distance from the bottom side of the tool palette to the bottom side of the window
+   */
+  bottomOffset?: number
 }
 ```
+
+Four `offsetXXX` properties are used to set the minimum distance from the side of the tool palette to the side of the window. It is quite useful if you want the tool palette is shown within area. For example, one web page has one title bar at the top of window, one status bar at the bottom of window, and one canvas area between the title bar and the status bar. The height of the title bar is 60px and the height of the status bar is 20px. Then you can set `topOffset` to 60 and `bottomOffset` to 20 to let the tool palette are shown and moved within canvas area only. 
 
 It is quite easy to use it.
 
@@ -46,6 +64,8 @@ const toolPaletteVisible = ref<boolean>(false)
     class="tool-palette"
     v-model="toolPaletteVisible"
     title="Tool Palette Test"
+    offset-top="60"
+    offset-bottom="20"
   >
     <span>Tool Palette Test</span>
   </ml-tool-palette>

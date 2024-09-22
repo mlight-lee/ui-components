@@ -39,7 +39,7 @@ export function useBoundingRect(
   const reversed = computed(() => {
     return orientation.value === 'right'
   })
-  const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.gap)
+  const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.offset)
   const { width: toolPaletteWidth, left: toolPaletteLeft } = useLeftPosAndWidth(rect, isResizing, position, isDragging)
   const { lastTop, lastHeight } = useLastPosAndSize(
     computed(() => rect.value.left),
@@ -58,11 +58,11 @@ export function useBoundingRect(
       if (reversed.value) {
         rect.value.left = tempLeft
 
-        // If the following conditions are met, decrease the gap between the right side of tool palette and right side of window
-        // - the gap between the right side of tool palette and right side of window equal to or greater than 0, 
+        // If the following conditions are met, decrease the distance between the right side of tool palette and right side of window
+        // - the distance between the right side of tool palette and right side of window equal to or greater than 0, 
         // - The left side of window overlaps with the left side of tool platte
-        const rightGap = window.innerWidth - temp.width - temp.left
-        if (temp.left <= 0 && rightGap >= 0 && xDelta < 0) {
+        const rightOffset = window.innerWidth - temp.width - temp.left
+        if (temp.left <= 0 && rightOffset >= 0 && xDelta < 0) {
           rect.value.left = Math.max(0, tempLeft)
         }
 
@@ -110,8 +110,8 @@ export function useBoundingRect(
 
   const setDockedHeight = () => {
     if (docked.value) {
-      rect.value.top = dragOptions.value.gap.value.top
-      rect.value.height = window.innerHeight - dragOptions.value.gap.value.top - dragOptions.value.gap.value.bottom
+      rect.value.top = dragOptions.value.offset.value.top
+      rect.value.height = window.innerHeight - dragOptions.value.offset.value.top - dragOptions.value.offset.value.bottom
     } else {
       rect.value.top = lastTop.value
       rect.value.height = lastHeight.value
