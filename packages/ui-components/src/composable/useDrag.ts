@@ -53,6 +53,20 @@ export function useDrag(
       }
   })
 
+  const setInitialPosition = () => {
+    if (targetRef.value) {
+      const rect = targetRef.value.getBoundingClientRect()
+      initialPosition.value = {
+        x: rect.left,
+        y: rect.top
+      }
+      position.value = {
+        x: rect.left,
+        y: rect.top
+      }
+    }
+  }
+
   const addEventListeners = () => {
     if (targetRef.value) {
       targetRef.value.addEventListener('mousedown', onMouseDown)
@@ -83,15 +97,7 @@ export function useDrag(
     mouseStartPos.x = event.clientX
     mouseStartPos.y = event.clientY
 
-    const rect = targetRef.value.getBoundingClientRect()
-    initialPosition.value = {
-      x: rect.left,
-      y: rect.top
-    }
-    position.value = {
-      x: rect.left,
-      y: rect.top
-    }
+    setInitialPosition()
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   }
@@ -148,6 +154,7 @@ export function useDrag(
 
   onMounted(() => {
     if (targetRef.value) {
+      setInitialPosition() // Set initial position from CSS
       addEventListeners()
     }
   })
@@ -161,6 +168,7 @@ export function useDrag(
   // Watch for changes in the targetRef, to handle cases where v-if makes the element appear/disappear
   watch(targetRef, newVal => {
     if (newVal) {
+      setInitialPosition() // Set initial position from CSS
       addEventListeners()
     } else {
       removeEventListeners()
