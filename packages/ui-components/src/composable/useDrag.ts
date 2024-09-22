@@ -1,6 +1,5 @@
 import {
   computed,
-  nextTick,
   onMounted,
   onUnmounted,
   Ref,
@@ -39,24 +38,20 @@ export function useDrag(
   options?: Ref<DragOptions>
 ) {
   const isDragging = ref(false)
-  const position = ref<Position>({ x: 0, y: 0 })
-  const initialPosition = ref<Position>({ x: 0, y: 0 }) // Initial CSS position
+  // The position of `targetRef` when mouse click is moving and moved
+  const position = ref<Position | null>(null)
+  // The initial position of `targetRef` from css
+  const initialPosition = ref<Position | null>(null)
+  // The mouse position when mouse click down
+  const mouseStartPos = { x: 0, y: 0 }
   const movement = computed(() => {
-    return {
-      x: position.value.x - initialPosition.value.x,
-      y: position.value.y - initialPosition.value.y
-    }
+    return (position.value == null || initialPosition.value == null) ?
+      { x: 0, y: 0 } :
+      {
+        x: position.value.x - initialPosition.value.x,
+        y: position.value.y - initialPosition.value.y
+      }
   })
-
-  const setInitialPosition = () => {
-    if (targetRef.value) {
-      const rect = targetRef.value.getBoundingClientRect()
-      initialPosition.value.x = rect.left
-      initialPosition.value.y = rect.top
-      position.value.x = rect.left
-      position.value.y = rect.top
-    }
-  }
 
   const addEventListeners = () => {
     if (targetRef.value) {
@@ -71,7 +66,9 @@ export function useDrag(
   }
 
   const onMouseDown = (event: MouseEvent) => {
-    // Check whether mouse clicks on `dragElementRef`
+    if (targetRef.value == null) return
+
+    // If draElementRef is specified, check whether mouse clicks on `dragElementRef`
     if (dragElementRef && dragElementRef.value) {
       const rect = dragElementRef.value.getBoundingClientRect()
       const isOutside =
@@ -81,26 +78,40 @@ export function useDrag(
         event.clientY > rect.bottom
       if (isOutside) return
     }
+
     isDragging.value = true
+    mouseStartPos.x = event.clientX
+    mouseStartPos.y = event.clientY
+
+    const rect = targetRef.value.getBoundingClientRect()
+    initialPosition.value = {
+      x: rect.left,
+      y: rect.top
+    }
+    position.value = {
+      x: rect.left,
+      y: rect.top
+    }
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   }
 
   const onMouseMove = (e: MouseEvent) => {
-    if (isDragging.value) {
+    if (isDragging.value && initialPosition.value && position.value) {
       const viewportWidth = window.innerWidth
       const viewportHeight = window.innerHeight
       const element = targetRef.value as HTMLElement
-      const elementWidth = element.offsetWidth
-      const elementHeight = element.offsetHeight
+      const rect = element.getBoundingClientRect()
+      const elementWidth = rect.width
+      const elementHeight = rect.height
 
-      const newX = position.value.x + e.movementX
-      const newY = position.value.y + e.movementY
+      const newX = initialPosition.value.x + (e.clientX - mouseStartPos.x)
+      const newY = initialPosition.value.y + (e.clientY - mouseStartPos.y)
 
       // Set left/right position according to gap constraints in dragging options
       position.value.x = Math.max(
         options ? options.value.gap.value.left : 0,
-        Math.min(newX, viewportWidth - elementWidth)
+        newX
       )
       const distanceToRightBorder = viewportWidth - elementWidth
       position.value.x = Math.min(
@@ -137,16 +148,12 @@ export function useDrag(
 
   onMounted(() => {
     if (targetRef.value) {
-      nextTick(() => {
-        setInitialPosition() // Set initial position from CSS
-        addEventListeners()
-      })
+      addEventListeners()
     }
   })
 
   onUnmounted(() => {
     if (targetRef.value) {
-      setInitialPosition() // Re-calculate the position when the component becomes visible
       targetRef.value.removeEventListener('mousedown', onMouseDown)
     }
   })
@@ -154,10 +161,7 @@ export function useDrag(
   // Watch for changes in the targetRef, to handle cases where v-if makes the element appear/disappear
   watch(targetRef, newVal => {
     if (newVal) {
-      nextTick(() => {
-        setInitialPosition() // Set initial position from CSS
-        addEventListeners()
-      })
+      addEventListeners()
     } else {
       removeEventListeners()
     }
@@ -166,6 +170,6 @@ export function useDrag(
   return {
     isDragging,
     movement,
-    position
+    position: position as Ref<Position>
   }
 }
