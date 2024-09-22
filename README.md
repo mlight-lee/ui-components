@@ -64,8 +64,8 @@ const toolPaletteVisible = ref<boolean>(false)
     class="tool-palette"
     v-model="toolPaletteVisible"
     title="Tool Palette Test"
-    offset-top="60"
-    offset-bottom="20"
+    :top-offset="60"
+    :bottom-offset="20"
   >
     <span>Tool Palette Test</span>
   </ml-tool-palette>
