@@ -24,14 +24,20 @@ interface Props {
   reverse?: boolean
 }
 
+interface Events {
+  /**
+   * Trigger this event when collapse icon state changed.
+   * @param isCollapsed New collapse icon state
+   */
+  (e: 'change', isCollapsed: boolean): void
+}
+
 const props = withDefaults(defineProps<Props>(), {
   size: 18,
   reverse: false
 })
 const isCollapsed = defineModel({ default: true })
-const emit = defineEmits({
-  change: null
-})
+const emit = defineEmits<Events>()
 
 const icon = computed(() => {
   if (props.reverse) {

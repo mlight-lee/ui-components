@@ -2,50 +2,61 @@ import { onBeforeUnmount, onMounted, Ref, watch } from 'vue'
 
 /**
  * Add and clean transition style for the specified element
- * @param targetRef Input element to add and clean transition style
+ * @param toolPaletteRef Input tool palette to add & clean transition style
  * @param reversed Input flag whether to reverse cllapse icon
  * @param collapsed Input flag to indicate whether the element is collapsed
  */
 export function useTransition(
-  targetRef: Ref<HTMLElement | null>,
+  toolPaletteRef: Ref<HTMLElement | null>,
   reversed: Ref<boolean>,
   collapsed: Ref<boolean>,
+  autoOpened: Ref<boolean>
 ) {
-  // Clean transition logic
-  function cleanTransition() {
-    if (targetRef.value) {
+  const addTransition = () => {
+    if (toolPaletteRef.value) {
+      const element = toolPaletteRef.value as HTMLElement
+      if (reversed.value) {
+        element.style.transition = 'width 0.3s ease-out, left 0.3s ease-out'
+      } else {
+        element.style.transition = 'width 0.3s ease'
+      }
+    }
+  }
+
+  const cleanTransition = () => {
+    if (toolPaletteRef.value) {
       // Here you can clean up or reset the style after transition
-      targetRef.value.style.transition = '' // Reset any inline transitions
+      toolPaletteRef.value.style.transition = '' // Reset any inline transitions
     }
   }
 
   const cleanupListeners = () => {
-    if (targetRef.value) {
-      targetRef.value.removeEventListener('transitionend', cleanTransition)
+    if (toolPaletteRef.value) {
+      toolPaletteRef.value.removeEventListener('transitionend', cleanTransition)
     }
   }
 
   const setupListeners = () => {
-    if (targetRef.value) {
-      targetRef.value.addEventListener('transitionend', cleanTransition)
+    if (toolPaletteRef.value) {
+      toolPaletteRef.value.addEventListener('transitionend', cleanTransition)
     }
   }
 
   // Attach and remove the transitionend event listener
   onMounted(() => {
-    if (targetRef.value) {
-      targetRef.value.addEventListener('transitionend', cleanTransition)
+    if (toolPaletteRef.value) {
+      toolPaletteRef.value.addEventListener('transitionend', cleanTransition)
     }
   })
 
   onBeforeUnmount(() => {
-    if (targetRef.value) {
-      targetRef.value.removeEventListener('transitionend', cleanTransition)
+    if (toolPaletteRef.value) {
+      toolPaletteRef.value.removeEventListener('transitionend', cleanTransition)
     }
   })
 
   // Watch for changes in the targetRef, to handle cases where v-if makes the element appear/disappear
-  watch(targetRef, newVal => {
+  watch(toolPaletteRef, newVal => {
     if (newVal) {
       setupListeners()
     } else {
@@ -53,15 +64,11 @@ export function useTransition(
     }
   })
 
-  // Add transition style
   watch(collapsed, () => {
-    if (targetRef.value) {
-      const element = targetRef.value as HTMLElement
-      if (reversed.value) {
-        element.style.transition = 'width 0.3s ease-out, left 0.3s ease-out'
-      } else {
-        element.style.transition = 'width 0.3s ease'
-      }
-    }
+    addTransition()
+  })
+
+  watch(autoOpened, () => {
+    addTransition()
   })
 }

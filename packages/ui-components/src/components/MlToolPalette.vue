@@ -28,7 +28,6 @@
           class="ml-tool-palette-dialog-icon"
           v-model="collapsed"
           :reverse="reversed"
-          @change="handleCollapsed"
         />
         <span class="ml-tool-palette-title">{{ props.title }}</span>
       </div>
@@ -42,9 +41,9 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
+import { WIDTH_OF_TITLE_BAR } from '../composable/types'
 import { useBoundingRect } from '../composable/useBoundingRect'
 import { DragOptions } from '../composable/useDrag'
-import { useDragEx } from '../composable/useDragEx'
 import MlCollapse from './MlCollapse.vue'
 
 /**
@@ -55,11 +54,27 @@ interface Props {
    * The title of tool palette dialog
    */
   title?: string
+  /**
+   * The minimum distance from the left side of one element to the left side of the window
+   */
+  leftGap?: number
+  /**
+   * The minimum distance from the right side of one element to the right side of the window
+   */
+  rightGap?: number
+  /**
+   * The minimum distance from the top side of one element to the top side of the window
+   */
+  topGap?: number
+  /**
+   * The minimum distance from the bottom side of one element to the bottom side of the window
+   */
+  bottomGap?: number
 }
 
 interface Events {
   /**
-   * Trigger this event when closing the tool palette.
+   * Trigger this event when the tool palette closed.
    * @param pos The left and top position of the tool palette before closed
    */
   (e: 'close', pos: { x: number; y: number }): void
@@ -67,12 +82,19 @@ interface Events {
 
 // Attributes of tool palette component
 const props = withDefaults(defineProps<Props>(), {
-  title: ''
+  title: '',
+  leftGap: 0,
+  rightGap: 0,
+  topGap: 0,
+  bottomGap: 0
 })
 // Flag to control whether the tool palette is visible
 const visible = defineModel({ default: true })
 const emit = defineEmits<Events>()
 
+// This varible is used in CSS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const collapsedWidth = WIDTH_OF_TITLE_BAR
 // Flag to indicate whether the tool palette is collapsed
 const collapsed = ref<boolean>(false)
 // Referernce to title bar HTML element of tool palette
@@ -80,27 +102,21 @@ const titleBarElement = ref<HTMLElement | null>(null)
 // Reference to tool palette HTML element
 const toolPaletteElement = ref<HTMLElement | null>(null)
 
-// Flag to reverse cllapse icon
-const reversed = computed(() => {
-  return orientation.value === 'right'
-})
-
 const dragOptions = computed<DragOptions>(() => {
   return {
-    leftGap: 0,
-    rightGap: 0,
-    container: toolPaletteElement.value
+    gap: ref({
+      left: props.leftGap,
+      right: props.rightGap,
+      top: props.topGap,
+      bottom: props.bottomGap
+    })
   }
 })
-const { docked, orientation, movement } = useDragEx(
-  titleBarElement,
-  dragOptions
-)
-const { rect: toolPaletteRect } = useBoundingRect(
+const { rect: toolPaletteRect, orientation, reversed } = useBoundingRect(
   toolPaletteElement,
-  reversed,
+  titleBarElement,
   collapsed,
-  movement
+  dragOptions
 )
 
 // Resized style
@@ -109,13 +125,9 @@ const resizedStyle = computed(() => {
     left: `${toolPaletteRect.value.left}px`,
     top: `${toolPaletteRect.value.top}px`,
     width: `${toolPaletteRect.value.width}px`,
-    height: docked.value ? '100%' : `${toolPaletteRect.value.height}px`
+    height: `${toolPaletteRect.value.height}px`
   }
 })
-
-const handleCollapsed = (value: boolean) => {
-  collapsed.value = value
-}
 
 const handleClose = () => {
   visible.value = false
@@ -132,7 +144,7 @@ const handleClose = () => {
   cursor: default;
   width: 300px;
   min-width: var(--collapsed-width);
-  position: absolute;
+  position: fixed;
   border: 1px solid;
   border-radius: 4px;
 }

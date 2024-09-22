@@ -1,7 +1,11 @@
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
-import { Position, WIDTH_OF_TITLE_BAR } from './types'
-import { useInitialRect } from './useInitialRect'
+import { WIDTH_OF_TITLE_BAR } from './types'
+import { useAutoOpen } from './useAutoOpen'
+import { DragOptions } from './useDrag'
+import { useDragEx } from './useDragEx'
+import { useLastPosAndSize } from './useLastPosAndSize'
+import { useLeftPosAndWidth } from './useLeftPosAndWidth'
 import { useResize } from './useResize'
 import { useTransition } from './useTransition'
 
@@ -9,35 +13,69 @@ import { useTransition } from './useTransition'
  * Get the bounding rect of the tool palette.
  * - If it is the first time to show the tool palette, return the initial size and position from CSS
  * - Otherwise, return the size and postion after resized
- * @param targetRef Input the tool palette HTML element to get its bounding rect
- * @param reversed Input flag whether to reverse cllapse icon
+ * @param toolPaletteRef Input the tool palette element to get its bounding rect
+ * @param titleBarRef Input the title bar element of the tool palette
  * @param collapsed Input flag to indicate whether the tool palette is collapsed
- * @param movement Input dragging movement
- * @returns Return the bounding rect of the tool palette
+ * @param dragOptions Input dragging options
+ * @returns Return the following data.
+ * - rect: the bounding rect of the tool palette
+ * - orientation: the orientation of the tool palette. For now, 'left' and 'right' are supported.
+ * - reversed: flag whether to reverse cllapse icon
  */
 export function useBoundingRect(
-  targetRef: Ref<HTMLElement | null>,
-  reversed: Ref<boolean>,
+  toolPaletteRef: Ref<HTMLElement | null>,
+  titleBarRef: Ref<HTMLElement | null>,
   collapsed: Ref<boolean>,
-  movement: Ref<Position>
+  dragOptions: Ref<DragOptions>
 ) {
   const windowWidth = ref(window.innerWidth)
-  const windowHeight = ref(window.innerHeight)  
-  const { initialRect } = useInitialRect(targetRef)
-  const { rect: resizedRect } = useResize(targetRef, reversed)
-  useTransition(targetRef, reversed, collapsed)
-  
-  const rect = computed(() => {
-    return resizedRect.value.width && resizedRect.value.height
-      ? resizedRect.value
-      : initialRect.value
+  const windowHeight = ref(window.innerHeight)
+  const { docked, orientation, movement, position, isDragging } = useDragEx(
+    toolPaletteRef,
+    titleBarRef,
+    dragOptions
+  )
+  // Flag to reverse cllapse icon
+  const reversed = computed(() => {
+    return orientation.value === 'right'
   })
+  const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.gap)
+  const { width: toolPaletteWidth, left: toolPaletteLeft } = useLeftPosAndWidth(rect, isResizing, position, isDragging)
+  const { lastTop, lastHeight } = useLastPosAndSize(
+    computed(() => rect.value.left),
+    computed(() => rect.value.top),
+    computed(() => rect.value.width),
+    computed(() => rect.value.height)
+  )
+  const { autoOpened } = useAutoOpen(toolPaletteRef, titleBarRef, collapsed)
+  useTransition(toolPaletteRef, reversed, collapsed, autoOpened)
 
   // Modify the position of this tool palette according to current orientation
   const setTargetPos = (xDelta: number) => {
-    if (targetRef.value && reversed.value) {
-      const rect = targetRef.value.getBoundingClientRect()
-      targetRef.value.style.left = (rect.left + xDelta) + 'px'
+    if (toolPaletteRef.value) {
+      const temp = toolPaletteRef.value.getBoundingClientRect()
+      const tempLeft = temp.left + xDelta
+      if (reversed.value) {
+        rect.value.left = tempLeft
+
+        // If the following conditions are met, decrease the gap between the right side of tool palette and right side of window
+        // - the gap between the right side of tool palette and right side of window equal to or greater than 0, 
+        // - The left side of window overlaps with the left side of tool platte
+        const rightGap = window.innerWidth - temp.width - temp.left
+        if (temp.left <= 0 && rightGap >= 0 && xDelta < 0) {
+          rect.value.left = Math.max(0, tempLeft)
+        }
+
+        // If window width is too small to contain tool palette, just keep tool palette docked on the right side of window
+        if (window.innerWidth - temp.width <= 0) {
+          rect.value.left = window.innerWidth - temp.width
+        }
+      } else {
+        // The right side of window overlaps with the right side of tool platte
+        if (((temp.left + temp.width) >= window.innerWidth) && xDelta < 0) {
+          rect.value.left = Math.max(0, tempLeft)
+        }
+      }
     }
   }
 
@@ -56,32 +94,54 @@ export function useBoundingRect(
     window.removeEventListener('resize', updateWindowSize)
   })
 
-  // Watch collapsed state. If it is collapsed, store the old width in order to reuse it when expanding the tool palette
-  let oldWidth: number | null | undefined = null
-  watch(collapsed, newVal => {
-    if (newVal) {
-      oldWidth = rect.value.width
+  const setLeftPosAndWidth = (shrink: boolean) => {
+    if (shrink) {
       rect.value.width = WIDTH_OF_TITLE_BAR
-      if (reversed.value && rect.value.left && oldWidth) {
-        rect.value.left = rect.value.left + oldWidth - WIDTH_OF_TITLE_BAR
+      if (reversed.value && toolPaletteLeft.value && toolPaletteWidth.value) {
+        rect.value.left = toolPaletteLeft.value + toolPaletteWidth.value - WIDTH_OF_TITLE_BAR
       }
     } else {
-      rect.value.width = oldWidth
-      if (reversed.value && rect.value.left && oldWidth) {
-        rect.value.left = rect.value.left - oldWidth + WIDTH_OF_TITLE_BAR
+      rect.value.width = toolPaletteWidth.value
+      if (reversed.value && toolPaletteLeft.value && toolPaletteWidth.value) {
+        rect.value.left = toolPaletteLeft.value
       }
-      oldWidth = null
+    }
+  }
+
+  const setDockedHeight = () => {
+    if (docked.value) {
+      rect.value.top = dragOptions.value.gap.value.top
+      rect.value.height = window.innerHeight - dragOptions.value.gap.value.top - dragOptions.value.gap.value.bottom
+    } else {
+      rect.value.top = lastTop.value
+      rect.value.height = lastHeight.value
+    }
+  }
+
+  watch(docked, () => {
+    setDockedHeight()
+  })
+
+  // Watch collapsed state. If it is collapsed, store the old width in order to reuse it when expanding the tool palette
+  watch(collapsed, newVal => {
+    setLeftPosAndWidth(newVal)
+  })
+
+  watch(autoOpened, newVal => {
+    // `autoOpened` takes effect only if `collapsed` is true.
+    if (collapsed.value && !isDragging.value) {
+      setLeftPosAndWidth(!newVal)
     }
   })
 
   watch(movement, newVal => {
-    if (newVal && targetRef.value) {
-      const element = targetRef.value as HTMLElement
+    if (newVal && toolPaletteRef.value) {
+      const element = toolPaletteRef.value as HTMLElement
       const temp = element.getBoundingClientRect()
       rect.value.left = temp.left
       rect.value.top = temp.top
     }
   })
 
-  return { rect }
+  return { rect, orientation, reversed }
 }

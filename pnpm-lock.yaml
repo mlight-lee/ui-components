@@ -87,7 +87,7 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1(vue@3.4.38(typescript@5.5.4))
       '@mlightcad/ui-components':
-        specifier: 0.0.7
+        specifier: 0.0.8
         version: link:../ui-components
       element-plus:
         specifier: ^2.8.1

@@ -28,7 +28,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@mlightcad/ui-components": "0.0.7",
+    "@mlightcad/ui-components": "0.0.8",
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.8.1",
     "vue": "^3.4.21"

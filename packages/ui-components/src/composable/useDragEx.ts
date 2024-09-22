@@ -1,11 +1,13 @@
 import { Ref, ref, watch } from 'vue'
 
-import { Orientation, WIDTH_OF_TITLE_BAR } from './types'
+import { Orientation } from './types'
 import { DragOptions, useDrag } from './useDrag'
 
 /**
  * One extension to `useDrag` to support docking and orientation
  * @param targetRef Input element to drag
+ * @param dragElementRef If it isn't null, `targetRef` can be dragged only if
+ * start dragging from this element.
  * @param options Input dragging options to customize dragging behaviors
  * @returns Return thefollowing data
  * - isDragging: flag to indicate whether the element is in dragging state
@@ -16,22 +18,26 @@ import { DragOptions, useDrag } from './useDrag'
  */
 export function useDragEx(
   targetRef: Ref<HTMLElement | null>,
+  dragElementRef: Ref<HTMLElement | null>,
   options: Ref<DragOptions>
 ) {
   const docked = ref<boolean>(false)
   const orientation = ref<Orientation>('left')
-  const { isDragging, movement, position } = useDrag(targetRef, options)
+  const { isDragging, movement, position } = useDrag(targetRef, dragElementRef, options)
 
   // Watch movement of tool palette to modify `docked` flag and `orientation` flag when the tool palette
   // is on the left/right border of the window
   watch(movement, newVal => {
-    if (newVal && options.value.container) {
-      const element = options.value.container as HTMLElement
+    if (newVal && targetRef.value) {
+      const element = targetRef.value
       const rect = element.getBoundingClientRect()
-      if (rect.left <= options.value.leftGap) {
+      if (rect.left <= options.value.gap.value.left) {
         orientation.value = 'left'
         docked.value = true
-      } else if ((window.innerWidth - rect.left - rect.width - WIDTH_OF_TITLE_BAR) <= options.value.rightGap) {
+      } else if (
+        window.innerWidth - rect.left - rect.width <=
+        options.value.gap.value.right
+      ) {
         orientation.value = 'right'
         docked.value = true
       } else {

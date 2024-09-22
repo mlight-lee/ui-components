@@ -1,6 +1,5 @@
 import {
   computed,
-  nextTick,
   onMounted,
   onUnmounted,
   Ref,
@@ -8,58 +7,51 @@ import {
   watch
 } from 'vue'
 
-import { Position } from './types'
+import { Gap, Position } from './types'
 
 /**
  * Options to use `useDrag`
  */
 export interface DragOptions {
   /**
-   * The minimum distance from the left border of the element to the left border of the window
+   * The minimum distance from the side of the element to the side of the window. If the position of the 
+   * element `targetRef` is located in the specified gap area, just modify its position to not intersect
+   * with the gap area.
    */
-  leftGap: number
-  /**
-   * The minimum distance from the right border of the element to the right border of the window
-   */
-  rightGap: number
-  /**
-   * The container HTML element. Its left and top attributes will be modified when mouse is moving.
-   */
-  container: HTMLElement | null
+  gap: Ref<Gap>
 }
 
 /**
  * Drag `targetRef` element to move it
  * @param targetRef Input element to drag
+ * @param dragElementRef If it isn't null, `targetRef` can be dragged only if
+ * start dragging from this element.
  * @param options Input dragging options to customize dragging behaviors
- * @returns Return thefollowing data
+ * @returns Return the following data
  * - isDragging: flag to indicate whether the element is in dragging state
  * - movement: movement based on the original position of the element
  * - position: new left and top position of the element after dragged
  */
 export function useDrag(
   targetRef: Ref<HTMLElement | null>,
+  dragElementRef?: Ref<HTMLElement | null>,
   options?: Ref<DragOptions>
 ) {
   const isDragging = ref(false)
-  const position = ref<Position>({ x: 0, y: 0 })
-  const initialPosition = ref<Position>({ x: 0, y: 0 }) // Initial CSS position
+  // The position of `targetRef` when mouse click is moving and moved
+  const position = ref<Position | null>(null)
+  // The initial position of `targetRef` from css
+  const initialPosition = ref<Position | null>(null)
+  // The mouse position when mouse click down
+  const mouseStartPos = { x: 0, y: 0 }
   const movement = computed(() => {
-    return {
-      x: position.value.x - initialPosition.value.x,
-      y: position.value.y - initialPosition.value.y
-    }
+    return (position.value == null || initialPosition.value == null) ?
+      { x: 0, y: 0 } :
+      {
+        x: position.value.x - initialPosition.value.x,
+        y: position.value.y - initialPosition.value.y
+      }
   })
-
-  const setInitialPosition = () => {
-    if (targetRef.value) {
-      const rect = targetRef.value.getBoundingClientRect()
-      initialPosition.value.x = rect.left
-      initialPosition.value.y = rect.top
-      position.value.x = rect.left
-      position.value.y = rect.top
-    }
-  }
 
   const addEventListeners = () => {
     if (targetRef.value) {
@@ -73,45 +65,78 @@ export function useDrag(
     }
   }
 
-  const onMouseDown = () => {
+  const onMouseDown = (event: MouseEvent) => {
+    if (targetRef.value == null) return
+
+    // If draElementRef is specified, check whether mouse clicks on `dragElementRef`
+    if (dragElementRef && dragElementRef.value) {
+      const rect = dragElementRef.value.getBoundingClientRect()
+      const isOutside =
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom
+      if (isOutside) return
+    }
+
     isDragging.value = true
+    mouseStartPos.x = event.clientX
+    mouseStartPos.y = event.clientY
+
+    const rect = targetRef.value.getBoundingClientRect()
+    initialPosition.value = {
+      x: rect.left,
+      y: rect.top
+    }
+    position.value = {
+      x: rect.left,
+      y: rect.top
+    }
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   }
 
   const onMouseMove = (e: MouseEvent) => {
-    if (isDragging.value) {
-        const viewportWidth = window.innerWidth
-        const viewportHeight = window.innerHeight
-        const element = targetRef.value as HTMLElement
-        const elementWidth = element.offsetWidth
-        const elementHeight = element.offsetHeight
+    if (isDragging.value && initialPosition.value && position.value) {
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+      const element = targetRef.value as HTMLElement
+      const rect = element.getBoundingClientRect()
+      const elementWidth = rect.width
+      const elementHeight = rect.height
 
-        const newX = position.value.x + e.movementX
-        const newY = position.value.y + e.movementY
+      const newX = initialPosition.value.x + (e.clientX - mouseStartPos.x)
+      const newY = initialPosition.value.y + (e.clientY - mouseStartPos.y)
 
-        position.value.x = Math.max(
-          options ? options.value.leftGap : 0,
-          Math.min(newX, viewportWidth - elementWidth)
-        )
-        const containerWidth = options && options.value.container ? options.value.container.clientWidth : 0
-        const distanceToRightBorder = viewportWidth - containerWidth - elementWidth
-        position.value.x = Math.min(
-          options ? (distanceToRightBorder - options.value.rightGap) : distanceToRightBorder,
-          position.value.x
-        )
-        position.value.y = Math.max(
-          0,
-          Math.min(newY, viewportHeight - elementHeight)
+      // Set left/right position according to gap constraints in dragging options
+      position.value.x = Math.max(
+        options ? options.value.gap.value.left : 0,
+        newX
+      )
+      const distanceToRightBorder = viewportWidth - elementWidth
+      position.value.x = Math.min(
+        options
+          ? distanceToRightBorder - options.value.gap.value.right
+          : distanceToRightBorder,
+        position.value.x
+      )
+
+      // Set top/bottom position according to gap constraints in dragging options
+      position.value.y = Math.max(
+        options ? options.value.gap.value.top : 0,
+        Math.min(newY, viewportHeight - elementHeight)
+      )
+      const distanceToBottomBorder = viewportHeight - elementHeight
+      position.value.y = Math.min(
+          options
+            ? distanceToBottomBorder - options.value.gap.value.bottom
+            : distanceToBottomBorder,
+          position.value.y
         )
 
-        // Update values of left and top attributes of container element
-        if (options?.value.container) {
-          const container = options?.value.container
-          // const rect = container.getBoundingClientRect()
-          container.style.left = position.value.x + 'px'
-          container.style.top = position.value.y + 'px'
-        }
+      // Update values of left and top attributes of container element
+      element.style.left = position.value.x + 'px'
+      element.style.top = position.value.y + 'px'
     }
   }
 
@@ -123,16 +148,12 @@ export function useDrag(
 
   onMounted(() => {
     if (targetRef.value) {
-      nextTick(() => {
-        setInitialPosition() // Set initial position from CSS
-        addEventListeners()
-      })
+      addEventListeners()
     }
   })
 
   onUnmounted(() => {
     if (targetRef.value) {
-      setInitialPosition() // Re-calculate the position when the component becomes visible
       targetRef.value.removeEventListener('mousedown', onMouseDown)
     }
   })
@@ -140,10 +161,7 @@ export function useDrag(
   // Watch for changes in the targetRef, to handle cases where v-if makes the element appear/disappear
   watch(targetRef, newVal => {
     if (newVal) {
-      nextTick(() => {
-        setInitialPosition() // Set initial position from CSS
-        addEventListeners()
-      })
+      addEventListeners()
     } else {
       removeEventListeners()
     }
@@ -152,6 +170,6 @@ export function useDrag(
   return {
     isDragging,
     movement,
-    position
+    position: position
   }
 }
