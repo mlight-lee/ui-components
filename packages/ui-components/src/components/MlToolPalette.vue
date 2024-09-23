@@ -41,9 +41,9 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import { WIDTH_OF_TITLE_BAR } from '../composable/types'
-import { useBoundingRect } from '../composable/useBoundingRect'
-import { DragOptions } from '../composable/useDrag'
+import { WIDTH_OF_TITLE_BAR } from '../composables/types'
+import { useBoundingRect } from '../composables/useBoundingRect'
+import { DragOptions } from '../composables/useDrag'
 import MlCollapse from './MlCollapse.vue'
 
 /**
@@ -112,12 +112,11 @@ const dragOptions = computed<DragOptions>(() => {
     })
   }
 })
-const { rect: toolPaletteRect, orientation, reversed } = useBoundingRect(
-  toolPaletteElement,
-  titleBarElement,
-  collapsed,
-  dragOptions
-)
+const {
+  rect: toolPaletteRect,
+  orientation,
+  reversed
+} = useBoundingRect(toolPaletteElement, titleBarElement, collapsed, dragOptions)
 
 // Resized style
 const resizedStyle = computed(() => {

@@ -23,9 +23,9 @@ export function useInitialRect(
   const setInitialPosition = () => {
     if (!isIntialized && targetRef.value) {
       const rect = targetRef.value.getBoundingClientRect()
-      initialRect.value.left = Math.max(rect.left, offset.value.left) 
-      initialRect.value.top = Math.max(rect.top, offset.value.top) 
-      initialRect.value.width = rect.width 
+      initialRect.value.left = Math.max(rect.left, offset.value.left)
+      initialRect.value.top = Math.max(rect.top, offset.value.top)
+      initialRect.value.width = rect.width
       initialRect.value.height = rect.height
       isIntialized = true
     }

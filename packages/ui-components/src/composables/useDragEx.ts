@@ -23,7 +23,11 @@ export function useDragEx(
 ) {
   const docked = ref<boolean>(false)
   const orientation = ref<Orientation>('left')
-  const { isDragging, movement, position } = useDrag(targetRef, dragElementRef, options)
+  const { isDragging, movement, position } = useDrag(
+    targetRef,
+    dragElementRef,
+    options
+  )
 
   // Watch movement of tool palette to modify `docked` flag and `orientation` flag when the tool palette
   // is on the left/right border of the window

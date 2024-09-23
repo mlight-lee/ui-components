@@ -1,7 +1,7 @@
 import { onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 
-import { Offset } from './types';
-import { useInitialRect } from './useInitialRect';
+import { Offset } from './types'
+import { useInitialRect } from './useInitialRect'
 
 /**
  * Resize the specified element when moving mouse to its
@@ -25,7 +25,7 @@ export function useResize(
   collapsed: Ref<boolean> = ref(false),
   reverse: Ref<boolean> = ref(false),
   offset: Ref<Offset> = ref({ left: 0, right: 0, top: 0, bottom: 0 }),
-  minSize: { width: number; height: number } = { width: 20, height: 40 },
+  minSize: { width: number; height: number } = { width: 20, height: 40 }
 ) {
   const { initialRect: resizedBoundingRect } = useInitialRect(targetRef, offset)
   const isResizing = ref(false)

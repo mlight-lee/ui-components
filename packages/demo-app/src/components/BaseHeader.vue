@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { Menu as IconMenu } from '@element-plus/icons-vue'
 import {
   MlDropdownMenuItem,
@@ -36,7 +36,7 @@ const handleToolPalette = () => {
     <el-menu-item h="full" @click="toggleDark()">
       <button
         class="border-none w-full bg-transparent cursor-pointer"
-        style="height: var(--ep-menu-item-height)"
+        style="height: var(--el-menu-item-height)"
       >
         <i inline-flex i="dark:ep-moon ep-sunny" />
       </button>
@@ -50,7 +50,7 @@ const handleToolPalette = () => {
     v-model="toolPaletteVisible"
     title="Tool Palette Test"
     :top-offset="60"
-    :bottom-offset="20"
+    :bottom-offset="32"
   >
     <span>Tool Palette Test</span>
   </ml-tool-palette>
