@@ -3,9 +3,9 @@ import { computed, Ref, ref, watch } from 'vue'
 import { Position, Rect } from './types'
 
 /**
- * Get width and left position of tool palette. 
+ * Get width and left position of tool palette.
  * - the left position stored in this function is always the one when the tool palette is expanded.
- * - The width stored in this function will not change after tool palette expanded or collapsed. 
+ * - The width stored in this function will not change after tool palette expanded or collapsed.
  * So tool palette depends on value returned by this function to decide width to expand.
  * @param rect Input reference to current position and size of tool palette
  * @param isResizing Input flag whether the tool palette is resizing
@@ -25,7 +25,7 @@ export function useLeftPosAndWidth(
   const left = ref<number | null | undefined>(rect.value.left)
   const resizeWidth = computed(() => rect.value.width)
   const resizedLeft = computed(() => rect.value.left)
-  const draggedLeft = computed(() => position.value ? position.value.x : null)
+  const draggedLeft = computed(() => (position.value ? position.value.x : null))
 
   watch([resizeWidth, resizedLeft], ([newWidthVal, newLeftVal]) => {
     if (width.value == null || left.value == null) {
@@ -37,7 +37,7 @@ export function useLeftPosAndWidth(
     }
   })
 
-  watch(draggedLeft, (newVal) => {
+  watch(draggedLeft, newVal => {
     if (isDragging.value && position.value) {
       left.value = newVal
     }

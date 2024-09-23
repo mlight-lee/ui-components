@@ -4,7 +4,14 @@ import MlLanguage from './components/MlLanguage.vue'
 import MlStatusBar from './components/MlStatusBar.vue'
 import MlToolbar from './components/MlToolbar.vue'
 import MlToolPalette from './components/MlToolPalette.vue'
-export { MlCollapse, MlDropdown, MlLanguage, MlStatusBar, MlToolbar, MlToolPalette }
+export {
+  MlCollapse,
+  MlDropdown,
+  MlLanguage,
+  MlStatusBar,
+  MlToolbar,
+  MlToolPalette
+}
 export type { MlDropdownMenuItem } from './components/MlDropdown.vue'
 export type { MlButtonData } from './components/MlToolbar.vue'
 

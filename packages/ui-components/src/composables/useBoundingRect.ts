@@ -39,8 +39,18 @@ export function useBoundingRect(
   const reversed = computed(() => {
     return orientation.value === 'right'
   })
-  const { rect, isResizing } = useResize(toolPaletteRef, collapsed, reversed, dragOptions.value.offset)
-  const { width: toolPaletteWidth, left: toolPaletteLeft } = useLeftPosAndWidth(rect, isResizing, position, isDragging)
+  const { rect, isResizing } = useResize(
+    toolPaletteRef,
+    collapsed,
+    reversed,
+    dragOptions.value.offset
+  )
+  const { width: toolPaletteWidth, left: toolPaletteLeft } = useLeftPosAndWidth(
+    rect,
+    isResizing,
+    position,
+    isDragging
+  )
   const { lastTop, lastHeight } = useLastPosAndSize(
     computed(() => rect.value.left),
     computed(() => rect.value.top),
@@ -59,7 +69,7 @@ export function useBoundingRect(
         rect.value.left = tempLeft
 
         // If the following conditions are met, decrease the distance between the right side of tool palette and right side of window
-        // - the distance between the right side of tool palette and right side of window equal to or greater than 0, 
+        // - the distance between the right side of tool palette and right side of window equal to or greater than 0,
         // - The left side of window overlaps with the left side of tool platte
         const rightOffset = window.innerWidth - temp.width - temp.left
         if (temp.left <= 0 && rightOffset >= 0 && xDelta < 0) {
@@ -72,7 +82,7 @@ export function useBoundingRect(
         }
       } else {
         // The right side of window overlaps with the right side of tool platte
-        if (((temp.left + temp.width) >= window.innerWidth) && xDelta < 0) {
+        if (temp.left + temp.width >= window.innerWidth && xDelta < 0) {
           rect.value.left = Math.max(0, tempLeft)
         }
       }
@@ -98,7 +108,8 @@ export function useBoundingRect(
     if (shrink) {
       rect.value.width = WIDTH_OF_TITLE_BAR
       if (reversed.value && toolPaletteLeft.value && toolPaletteWidth.value) {
-        rect.value.left = toolPaletteLeft.value + toolPaletteWidth.value - WIDTH_OF_TITLE_BAR
+        rect.value.left =
+          toolPaletteLeft.value + toolPaletteWidth.value - WIDTH_OF_TITLE_BAR
       }
     } else {
       rect.value.width = toolPaletteWidth.value
@@ -111,7 +122,10 @@ export function useBoundingRect(
   const setDockedHeight = () => {
     if (docked.value) {
       rect.value.top = dragOptions.value.offset.value.top
-      rect.value.height = window.innerHeight - dragOptions.value.offset.value.top - dragOptions.value.offset.value.bottom
+      rect.value.height =
+        window.innerHeight -
+        dragOptions.value.offset.value.top -
+        dragOptions.value.offset.value.bottom
     } else {
       rect.value.top = lastTop.value
       rect.value.height = lastHeight.value

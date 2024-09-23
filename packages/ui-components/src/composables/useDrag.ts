@@ -1,11 +1,4 @@
-import {
-  computed,
-  onMounted,
-  onUnmounted,
-  Ref,
-  ref,
-  watch
-} from 'vue'
+import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 
 import { Offset, Position } from './types'
 
@@ -14,7 +7,7 @@ import { Offset, Position } from './types'
  */
 export interface DragOptions {
   /**
-   * The minimum distance from the side of the element to the side of the window. If the position of the 
+   * The minimum distance from the side of the element to the side of the window. If the position of the
    * element `targetRef` is located in the specified offset area, just modify its position to not intersect
    * with the offset area.
    */
@@ -45,12 +38,12 @@ export function useDrag(
   // The mouse position when mouse click down
   const mouseStartPos = { x: 0, y: 0 }
   const movement = computed(() => {
-    return (position.value == null || initialPosition.value == null) ?
-      { x: 0, y: 0 } :
-      {
-        x: position.value.x - initialPosition.value.x,
-        y: position.value.y - initialPosition.value.y
-      }
+    return position.value == null || initialPosition.value == null
+      ? { x: 0, y: 0 }
+      : {
+          x: position.value.x - initialPosition.value.x,
+          y: position.value.y - initialPosition.value.y
+        }
   })
 
   const setInitialPosition = () => {
@@ -134,11 +127,11 @@ export function useDrag(
       )
       const distanceToBottomBorder = viewportHeight - elementHeight
       position.value.y = Math.min(
-          options
-            ? distanceToBottomBorder - options.value.offset.value.bottom
-            : distanceToBottomBorder,
-          position.value.y
-        )
+        options
+          ? distanceToBottomBorder - options.value.offset.value.bottom
+          : distanceToBottomBorder,
+        position.value.y
+      )
 
       // Update values of left and top attributes of container element
       element.style.left = position.value.x + 'px'

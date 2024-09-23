@@ -7,8 +7,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import arrowLeft from '../svg/arrow-left.svg'
-import arrowRight from '../svg/arrow-right.svg'
+import arrowLeft from '../svgs/arrow-left.svg'
+import arrowRight from '../svgs/arrow-right.svg'
 
 /**
  * Properties of MlCllapse component
