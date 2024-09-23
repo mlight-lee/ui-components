@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MlButtonData, MlStatusBar, MlToolbar } from '@mlightcad/ui-components'
 import { useFullscreen } from '@vueuse/core'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 import fullScreen from '../svgs/full-screen.svg'
 
@@ -14,7 +14,7 @@ const deleteSvgIcon =
 const searchSvgIcon =
   '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="m795.904 750.72l124.992 124.928a32 32 0 0 1-45.248 45.248L750.656 795.904a416 416 0 1 1 45.248-45.248zM480 832a352 352 0 1 0 0-704a352 352 0 0 0 0 704"/></svg>'
 
-const data = reactive<MlButtonData[]>([
+const toolBarData = reactive<MlButtonData[]>([
   {
     icon: editSvgIcon,
     text: 'Edit',
@@ -35,6 +35,23 @@ const data = reactive<MlButtonData[]>([
   }
 ])
 
+const statusBarData = [
+  {
+    label: 'model',
+    value: 'model',
+  },
+  {
+    label: 'layout 1',
+    value: 'layout1',
+  },
+  {
+    label: 'layout 2',
+    value: 'layout2',
+  }
+]
+
+const currentModel = ref('model')
+
 const handleCommand = (command: string) => {
   console.log(command)
 }
@@ -43,13 +60,13 @@ const handleCommand = (command: string) => {
 <template>
   <ml-toolbar
     class="horizontal-toolbar-container"
-    :items="data"
+    :items="toolBarData"
     direction="horizontal"
     @click="handleCommand"
   />
   <ml-toolbar
     class="vertical-toolbar-container"
-    :items="data"
+    :items="toolBarData"
     direction="vertical"
     size="small"
     @click="handleCommand"
@@ -57,16 +74,12 @@ const handleCommand = (command: string) => {
   <ml-status-bar>
     <!-- Left Slot Content -->
     <template #left>
-      <el-radio-group v-model="model">
-        <el-radio-button value="model">model</el-radio-button>
-        <el-radio-button value="layout1">layout 1</el-radio-button>
-        <el-radio-button value="layout2">layout 2</el-radio-button>
-      </el-radio-group>
+      <el-segmented v-model="currentModel" :options="statusBarData" />
     </template>
 
     <!-- Right Slot Content -->
     <template #right>
-      <el-icon :size="15" style="cursor: pointer;" @click="toggle">
+      <el-icon :size="20" style="cursor: pointer;" @click="toggle">
         <full-screen />
       </el-icon>
     </template>

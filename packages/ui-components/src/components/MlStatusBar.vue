@@ -23,7 +23,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
   border-top: 1px solid var(--el-border-color);
   box-shadow: 0 -2px 1-px rgba(0, 0, 0, 0.24);
 }
