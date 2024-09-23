@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MlButtonData, MlToolbar } from '@mlightcad/ui-components'
+import { MlButtonData, MlStatusBar, MlToolbar } from '@mlightcad/ui-components'
 import { reactive } from 'vue'
 
 const editSvgIcon =
@@ -49,6 +49,17 @@ const handleCommand = (command: string) => {
     size="small"
     @click="handleCommand"
   />
+  <ml-status-bar>
+    <!-- Left Slot Content -->
+    <template #left>
+      <span>left part</span>
+    </template>
+
+    <!-- Right Slot Content -->
+    <template #right>
+      <span>right part</span>
+    </template>
+  </ml-status-bar>
 </template>
 
 <style scoped>
