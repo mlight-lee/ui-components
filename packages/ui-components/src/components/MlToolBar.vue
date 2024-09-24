@@ -13,8 +13,9 @@
         @click="handleCommand(item.command)"
       >
         <div>
-          <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
-          <el-icon :size="buttonIconSize" v-html="item.icon" />
+          <el-icon :size="buttonIconSize">
+            <component :is="item.icon" />
+          </el-icon>
           <div v-if="isShowButtonText" class="ml-toolbar-button-text">
             {{ item.text }}
           </div>
@@ -25,16 +26,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { Component, computed } from 'vue'
 
 /**
  * Data to descibe button appearance
  */
 export interface MlButtonData {
   /**
-   * Icon represented by one SVG string
+   * Icon represented by one vue component
    */
-  icon: string
+  icon: Component 
   /**
    * Text shown below icon
    */
