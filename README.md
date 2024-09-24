@@ -92,7 +92,7 @@ Features above can be customized by the following properties.
 
 ```javascript
 /**
- * Properties of MLToolbar components
+ * Properties of MLToolBar components
  */
 interface Props {
   /**

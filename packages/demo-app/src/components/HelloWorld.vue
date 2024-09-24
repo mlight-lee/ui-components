@@ -2,7 +2,7 @@
 import { Delete, Edit, Search } from '@element-plus/icons-vue'
 import { MlButtonData, MlStatusBar, MlToolBar } from '@mlightcad/ui-components'
 import { useFullscreen } from '@vueuse/core'
-import { reactive, ref } from 'vue'
+import { markRaw, reactive, ref } from 'vue'
 
 import fullScreen from '../svgs/full-screen.svg'
 
@@ -10,19 +10,19 @@ const { toggle } = useFullscreen()
 
 const toolBarData = reactive<MlButtonData[]>([
   {
-    icon: Edit,
+    icon: markRaw(Edit),
     text: 'Edit',
     command: 'edit',
     description: 'This is description for edit button'
   },
   {
-    icon: Delete,
+    icon: markRaw(Delete),
     text: 'Delete',
     command: 'delete',
     description: 'This is description for delete button'
   },
   {
-    icon: Search,
+    icon: markRaw(Search),
     text: 'Search',
     command: 'search',
     description: 'This is description for search button'
