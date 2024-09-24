@@ -26,7 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed } from 'vue'
+import { computed, DefineComponent } from 'vue'
+
+export type MlIconType = () => DefineComponent
 
 /**
  * Data to descibe button appearance
@@ -35,7 +37,7 @@ export interface MlButtonData {
   /**
    * Icon represented by one vue component
    */
-  icon: Component 
+  icon: MlIconType
   /**
    * Text shown below icon
    */
@@ -51,7 +53,7 @@ export interface MlButtonData {
 }
 
 /**
- * Properties of MlToolbar component
+ * Properties of MlToolBar component
  */
 interface Props {
   /**

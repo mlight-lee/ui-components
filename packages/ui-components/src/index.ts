@@ -23,7 +23,7 @@ export default {
     app.component('MlDropdown', MlDropdown)
     app.component('MlLanguage', MlLanguage)
     app.component('MlStatusBar', MlStatusBar)
-    app.component('MlToolbar', MlToolBar)
+    app.component('MlToolBar', MlToolBar)
     app.component('MlToolPalette', MlToolPalette)
   }
 }
