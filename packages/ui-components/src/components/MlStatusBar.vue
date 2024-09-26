@@ -24,6 +24,7 @@
   justify-content: space-between;
   align-items: center;
   background-color: var(--el-fill-color);
+  box-sizing: border-box;
   border: 1px solid var(--el-border-color);
 }
 
