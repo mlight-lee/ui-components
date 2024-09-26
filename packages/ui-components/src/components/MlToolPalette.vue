@@ -190,7 +190,6 @@ const handleClose = () => {
 }
 
 .ml-tool-palette-content {
-  pointer-events: none; /* Prevents the text from interfering with mousedown */
   user-select: none; /* Prevent text selection */
   flex-grow: 1;
   display: flex;

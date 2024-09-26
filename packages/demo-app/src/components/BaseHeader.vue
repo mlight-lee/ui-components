@@ -25,6 +25,10 @@ const data = reactive<MlDropdownMenuItem[]>([
 const handleToolPalette = () => {
   toolPaletteVisible.value = true
 }
+
+const handleClicked = () => {
+  console.log('Button clicked!')
+}
 </script>
 
 <template>
@@ -52,7 +56,9 @@ const handleToolPalette = () => {
     :top-offset="60"
     :bottom-offset="30"
   >
-    <span>Tool Palette Test</span>
+    <div class="tool-palette-content">
+      <el-button @click="handleClicked">Tool Palette Test</el-button>
+    </div>
   </ml-tool-palette>
 </template>
 
@@ -62,5 +68,10 @@ const handleToolPalette = () => {
   top: 55px;
   width: 400px;
   height: 500px;
+}
+
+.tool-palette-content {
+  display: flex;
+  align-items: center;
 }
 </style>
