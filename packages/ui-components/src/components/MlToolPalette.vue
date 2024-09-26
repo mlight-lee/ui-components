@@ -130,11 +130,11 @@ const resizedStyle = computed(() => {
 
 const titleBarBorderStyle = computed(() => {
   return reversed.value ? {
-    borderLeft: '1px solid',
+    borderLeft: '1px solid var(--el-border-color)',
     borderRight: null
   } : {
     borderLeft: null,
-    borderRight: '1px solid'
+    borderRight: '1px solid var(--el-border-color)'
   }
 })
 
@@ -155,11 +155,11 @@ const handleClose = () => {
   min-width: var(--collapsed-width);
   position: fixed;
   box-sizing: border-box;
-  border: 1px solid;
+  border: 1px solid var(--el-border-color);
 }
 
 .ml-tool-palette-dialog-icon {
-  border-bottom: 1px solid;
+  border-bottom: 1px solid var(--el-border-color);
 }
 
 .ml-tool-palette-dialog-layout {
