@@ -23,8 +23,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--el-border-color);
-  box-shadow: 0 -2px 1-px rgba(0, 0, 0, 0.24);
+  background-color: var(--el-fill-color);
+  border: 1px solid var(--el-border-color);
 }
 
 .ml-status-bar-left,

@@ -125,7 +125,7 @@ export function useDrag(
         options ? options.value.offset.value.top : 0,
         Math.min(newY, viewportHeight - elementHeight)
       )
-      const distanceToBottomBorder = viewportHeight - elementHeight
+      const distanceToBottomBorder = viewportHeight - elementHeight - 1
       position.value.y = Math.min(
         options
           ? distanceToBottomBorder - options.value.offset.value.bottom

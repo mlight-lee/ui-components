@@ -125,7 +125,7 @@ export function useBoundingRect(
       rect.value.height =
         window.innerHeight -
         dragOptions.value.offset.value.top -
-        dragOptions.value.offset.value.bottom
+        dragOptions.value.offset.value.bottom - 1
     } else {
       rect.value.top = lastTop.value
       rect.value.height = lastHeight.value
