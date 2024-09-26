@@ -175,6 +175,7 @@ const handleClose = () => {
   cursor: move; /* Draggable cursor on the left part */
   writing-mode: vertical-rl; /* Vertically align the text */
   text-align: center;
+  background-color: var(--el-fill-color);
 }
 
 .ml-tool-palette-title {
