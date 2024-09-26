@@ -6,7 +6,7 @@
     v-if="visible"
   >
     <div class="ml-tool-palette-dialog-layout" :class="orientation">
-      <div ref="titleBarElement" class="ml-tool-palette-title-bar">
+      <div ref="titleBarElement" class="ml-tool-palette-title-bar" :style="titleBarBorderStyle">
         <el-icon
           :size="18"
           class="ml-tool-palette-dialog-icon"
@@ -128,6 +128,16 @@ const resizedStyle = computed(() => {
   }
 })
 
+const titleBarBorderStyle = computed(() => {
+  return reversed.value ? {
+    borderLeft: '1px solid',
+    borderRight: null
+  } : {
+    borderLeft: null,
+    borderRight: '1px solid'
+  }
+})
+
 const handleClose = () => {
   visible.value = false
   const element = toolPaletteElement.value
@@ -144,8 +154,8 @@ const handleClose = () => {
   width: 300px;
   min-width: var(--collapsed-width);
   position: fixed;
+  box-sizing: border-box;
   border: 1px solid;
-  border-radius: 4px;
 }
 
 .ml-tool-palette-dialog-icon {
@@ -165,7 +175,6 @@ const handleClose = () => {
   cursor: move; /* Draggable cursor on the left part */
   writing-mode: vertical-rl; /* Vertically align the text */
   text-align: center;
-  border: 1px;
 }
 
 .ml-tool-palette-title {
@@ -185,8 +194,7 @@ const handleClose = () => {
   flex-grow: 1;
   display: flex;
   justify-content: space-around;
-  align-items: center;
-  background-color: white;
+  background-color: var(--el-fill-color);
   overflow: hidden; /* Hides content when width becomes 0 */
 }
 
