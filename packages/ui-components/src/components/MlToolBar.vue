@@ -26,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, DefineComponent } from 'vue'
+import { computed } from 'vue'
+
 import { MlIconType } from './types'
 
 /**

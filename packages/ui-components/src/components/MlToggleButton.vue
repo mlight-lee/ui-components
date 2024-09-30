@@ -6,6 +6,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
+
 import { MlIconType } from './types'
 
 /**
