@@ -1,6 +1,6 @@
 {
   "name": "@mlightcad/ui-components",
-  "version": "0.0.14",
+  "version": "0.0.16",
   "description": "One common UI component library based on Element Plus",
   "license": "MIT",
   "author": "MLight Lee <mlight.lee@outlook.com>",
@@ -14,6 +14,8 @@
     "vue",
     "element plus",
     "cad",
+    "AutoCAD",
+    "tool palette",
     "mlight"
   ],
   "main": "dist/ui-components.umd.js",

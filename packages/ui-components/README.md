@@ -9,8 +9,6 @@ The following components are included in this package.
 - Tool Palette: one dockable, resizable, and floating window, which is quite similar to AutoCAD Tool Palette.
 - Toolbar: one toolbar which can be easily customized by one array of button data. 
 
-You can play with them through [this live demo](https://mlight-lee.github.io/ui-components/).
-
 ### Tool Palette
 
 AutoCAD uses [tool palettes](https://help.autodesk.com/view/ACD/2025/ENU/?guid=GUID-167A8594-92CB-4FCC-B72C-0F546383E97C) to organize blocks, hatches, and custom tools in a tabbed window. Tool Palette component is quite similar to one in AutoCAD. It supports the following features.
