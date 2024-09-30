@@ -26,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, DefineComponent } from 'vue'
+import { computed } from 'vue'
 
-export type MlIconType = () => DefineComponent
+import { MlIconType } from './types'
 
 /**
  * Data to descibe button appearance

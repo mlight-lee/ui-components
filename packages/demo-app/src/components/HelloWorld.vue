@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Delete, Edit, Search } from '@element-plus/icons-vue'
-import { MlButtonData, MlStatusBar, MlToolBar } from '@mlightcad/ui-components'
+import { MlButtonData, MlStatusBar, MlToggleButton, MlToggleButtonData, MlToolBar } from '@mlightcad/ui-components'
 import { useFullscreen } from '@vueuse/core'
 import { markRaw, reactive, ref } from 'vue'
 
 import fullScreen from '../svgs/full-screen.svg'
 
-const { toggle } = useFullscreen()
+const { isFullscreen, toggle } = useFullscreen()
 
 const toolBarData = reactive<MlButtonData[]>([
   {
@@ -44,6 +44,13 @@ const statusBarData = [
   }
 ]
 
+const toggleFullScreenButtonData: MlToggleButtonData = {
+  onIcon: fullScreen,
+  offIcon: fullScreen,
+  onTooltip: 'Click to quit full screen mode',
+  offTooltip: 'Click to switch to full screen mode',
+}
+
 const currentModel = ref('model')
 
 const handleCommand = (command: string) => {
@@ -73,9 +80,7 @@ const handleCommand = (command: string) => {
 
     <!-- Right Slot Content -->
     <template #right>
-      <el-icon :size="20" style="cursor: pointer;" @click="toggle">
-        <full-screen />
-      </el-icon>
+      <ml-toggle-button :v-model="!isFullscreen" :data="toggleFullScreenButtonData" @click="toggle" />
     </template>
   </ml-status-bar>
 </template>

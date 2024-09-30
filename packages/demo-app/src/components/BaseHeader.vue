@@ -10,7 +10,7 @@ import { reactive } from 'vue'
 
 import { toggleDark } from '~/composables'
 
-const toolPaletteVisible = ref<boolean>(false)
+const toolPaletteVisible = ref<boolean>(true)
 const data = reactive<MlDropdownMenuItem[]>([
   {
     name: 'en',
@@ -65,8 +65,9 @@ const handleClicked = () => {
 <style scoped>
 .tool-palette {
   position: fixed;
-  top: 55px;
-  width: 400px;
+  left: 2px;
+  top: 150px;
+  width: 300px;
   height: 500px;
 }
 
